@@ -46,7 +46,6 @@ class Auth extends CI_Controller
                     // Password correct - upgrade to bcrypt
                     $new_hash = password_hash($password, PASSWORD_DEFAULT);
                     $this->user_model->update_password($user['id_user'], $new_hash);
-                    
                     $this->session->set_userdata(array(
                         'id_user' => $user['id_user'],
                         'username' => $user['username'],
@@ -54,6 +53,10 @@ class Auth extends CI_Controller
                         'must_change_password' => $user['must_change_password'],
                     ));
                     $this->user_model->update_login_meta($user['id_user'], date('Y-m-d H:i:s'));
+                    if ((int) $user['level'] === 2 && (int) $user['must_change_password'] === 1) {
+                        $this->session->set_flashdata('warning', 'Password Anda masih default. Silakan ubah terlebih dahulu.');
+                        redirect('auth/change_password');
+                    }
                     $this->redirect_by_level($user['level']);
                 } else {
                     // Password incorrect
@@ -68,7 +71,6 @@ class Auth extends CI_Controller
                         $new_hash = password_hash($password, PASSWORD_DEFAULT);
                         $this->user_model->update_password($user['id_user'], $new_hash);
                     }
-                    
                     $this->session->set_userdata(array(
                         'id_user' => $user['id_user'],
                         'username' => $user['username'],
@@ -76,6 +78,10 @@ class Auth extends CI_Controller
                         'must_change_password' => $user['must_change_password'],
                     ));
                     $this->user_model->update_login_meta($user['id_user'], date('Y-m-d H:i:s'));
+                    if ((int) $user['level'] === 2 && (int) $user['must_change_password'] === 1) {
+                        $this->session->set_flashdata('warning', 'Password Anda masih default. Silakan ubah terlebih dahulu.');
+                        redirect('auth/change_password');
+                    }
                     $this->redirect_by_level($user['level']);
                 } else {
                     // Password incorrect
@@ -85,6 +91,49 @@ class Auth extends CI_Controller
             }
         }
         $this->load->view('login');
+    }
+
+    public function change_password()
+    {
+        check_not_login();
+        check_pegawai();
+        $this->load->library('form_validation');
+
+        if ($this->input->post()) {
+            $this->form_validation->set_rules('current_password', 'Password Saat Ini', 'required');
+            $this->form_validation->set_rules('new_password', 'Password Baru', 'required|min_length[8]');
+            $this->form_validation->set_rules('confirm_password', 'Konfirmasi Password', 'required|matches[new_password]');
+
+            if ($this->form_validation->run() == FALSE) {
+                $this->session->set_flashdata('error', validation_errors());
+                redirect('auth/change_password');
+            }
+
+            $id_user = $this->session->userdata('id_user');
+            $current_password = $this->input->post('current_password');
+            $new_password = $this->input->post('new_password');
+
+            $user = $this->user_model->get_by_id($id_user);
+            if (!$user) {
+                $this->session->set_flashdata('error', 'Akun tidak ditemukan.');
+                redirect('auth/login');
+            }
+
+            if (!password_verify($current_password, $user['password'])) {
+                $this->session->set_flashdata('error', 'Password saat ini tidak sesuai.');
+                redirect('auth/change_password');
+            }
+
+            $new_hash = password_hash($new_password, PASSWORD_DEFAULT);
+            $this->user_model->update_password($id_user, $new_hash);
+            $this->user_model->set_must_change_password($id_user, 0);
+            $this->session->set_userdata('must_change_password', 0);
+            $this->session->set_flashdata('success', 'Password berhasil diperbarui.');
+            redirect('pegawai');
+        }
+
+        $data['page'] = 'Ubah Password';
+        $this->template->load('layout/template', 'user/change_password', $data);
     }
 
     public function logout()

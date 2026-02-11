@@ -10,3 +10,12 @@
 - Added user table fields unit and must_change_password with idempotent patch script.
 - Extended auth session setup and user model login metadata updates.
 - Added role guard helpers for admin and pegawai routes.
+## 2026-02-11
+- Added pegawai password change handler and view.
+- Enforced must_change_password redirect and dashboard reminder.
+- Recorded Phase 2 human verification as passed.
+- Marked AUTH-01 to AUTH-06 complete in requirements and traceability.
+- Updated roadmap and state for Phase 2 completion.
+## 2026-02-11
+- Created Phase 3 stock management plans (03-01 to 03-03).
+- Updated roadmap with Phase 3 plan list and count.

@@ -53,12 +53,12 @@ Plans:
 
 **Requirements Mapped:** AUTH-01, AUTH-02, AUTH-03, AUTH-04, AUTH-05, AUTH-06
 
-**Plans:** 4 plans (3/4 complete)
+**Plans:** 4 plans (4/4 complete)
 
 Plans:
 - [x] 02-01-PLAN.md — Core auth/session state + schema flags
 - [x] 02-02-PLAN.md — Role-based dashboards and redirects
-- [ ] 02-03-PLAN.md — Password change + default-password enforcement
+- [x] 02-03-PLAN.md — Password change + default-password enforcement
 - [x] 02-04-PLAN.md — Employee import preview + template download
 
 **Success Criteria:**
@@ -69,6 +69,8 @@ Plans:
 4. Pegawai sees password change reminder on first login with default NIP password
 5. Pegawai can change their password from default NIP to custom password
 6. Admin can download Excel template for employee bulk import
+
+**Completed:** 2026-02-11
 
 ---
 
@@ -90,6 +92,13 @@ Plans:
 6. System shows low stock alert when available stock falls below threshold
 7. Admin can view current stock levels with breakdown (Available/Reserved/Used)
 8. System blocks new requests when item's available stock is zero
+
+**Plans:** 3 plans (0/3 complete)
+
+Plans:
+- [ ] 03-01-PLAN.md — Stock schema + core models (categories, items, movements)
+- [ ] 03-02-PLAN.md — Manual stock CRUD UI with alerts and breakdown
+- [ ] 03-03-PLAN.md — Excel restock import with preview + template
 
 ---
 
@@ -159,13 +168,13 @@ Plans:
 | Phase | Goal | Requirements | Status | Progress |
 |-------|------|--------------|--------|----------|
 | 1 | Project Setup & Configuration | Infrastructure | Complete | 100% (4/4 plans complete) |
-| 2 | Authentication & User Management | 6 | In progress | 75% (3/4 plans complete) |
+| 2 | Authentication & User Management | 6 | Complete | 100% (4/4 plans complete) |
 | 3 | Stock Management | 11 | Pending | 0% |
 | 4 | Request Management Workflow | 14 | Pending | 0% |
 | 5 | Notifications | 5 | Pending | 0% |
 | 6 | Reports & Audit Trail | 9 | Pending | 0% |
 
-**Overall Progress:** 1/6 phases complete (17%)
+**Overall Progress:** 2/6 phases complete (33%)
 
 ---
 
@@ -182,4 +191,4 @@ Plans:
 ---
 
 *Roadmap created: 2026-02-10*  
-*Last updated: 2026-02-10*
+*Last updated: 2026-02-11*

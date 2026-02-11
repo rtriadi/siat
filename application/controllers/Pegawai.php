@@ -12,6 +12,11 @@ class Pegawai extends CI_Controller
 
     public function index()
     {
+        if ((int) $this->session->userdata('must_change_password') === 1) {
+            $this->session->set_flashdata('warning', 'Password Anda masih default. Silakan ubah terlebih dahulu.');
+            redirect('auth/change_password');
+        }
+
         $data['page'] = 'Dashboard';
         $this->template->load('layout/template', 'pegawai/dashboard', $data);
     }
