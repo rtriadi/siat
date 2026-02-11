@@ -16,10 +16,10 @@
 ## Current Position
 
 **Phase:** 3 of 6 (Stock Management)  
-**Plan:** 1 of 3 in current phase  
-**Status:** In progress  
-**Last activity:** 2026-02-11 - Completed 03-01-PLAN.md  
-**Progress:** █████░░░░░ 42%
+**Plan:** 3 of 3 in current phase  
+**Status:** Phase complete  
+**Last activity:** 2026-02-11 - Completed 03-03-PLAN.md  
+**Progress:** ██████░░░░ 58%
 
 ---
 
@@ -47,7 +47,8 @@
 | String-based item identifiers | Prevent numeric coercion issues during Excel imports | 2026-02-11 | ✓ Complete |
 | Transactional stock adjustments | All stock changes wrapped in CI3 transactions with movement logging | 2026-02-11 | ✓ Complete |
 | Uniqueness constraint on (category_id, item_name) | Prevents duplicate items within same category | 2026-02-11 | ✓ Complete |
-| Excel import with preview before commit | Prevents bulk data errors — admin can review before saving | 2026-02-10 | Pending implementation |
+| Excel import with preview before commit | Prevents bulk data errors — admin can review before saving | 2026-02-10 | ✓ Complete |
+| Item matching by ID with category+name fallback | Flexible import: ID is deterministic, category+name allows templates without IDs | 2026-02-11 | ✓ Complete |
 | Upgrade SHA1 to bcrypt | Security compliance requirement for government office | 2026-02-10 | ✓ Complete |
 | Hash-on-login migration pattern | Allows transparent SHA1-to-bcrypt upgrade without forcing password resets | 2026-02-10 | ✓ Complete |
 | PASSWORD_DEFAULT over PASSWORD_BCRYPT | Future-proofs implementation as PHP can change default algorithm | 2026-02-10 | ✓ Complete |
@@ -75,9 +76,10 @@ None currently identified.
 
 ### Recent Changes
 
+- **2026-02-11:** Completed 03-03-PLAN.md - Excel restock import with validation, preview, and template download
+- **2026-02-11:** Completed 03-02-PLAN.md - Manual stock CRUD UI with alerts and breakdown
 - **2026-02-11:** Completed 03-01-PLAN.md - Stock schema with three-state tracking and transactional models
 - **2026-02-11:** Phase 2 verified - All auth/account management checks approved
-- **2026-02-11:** Completed 02-03-PLAN.md - Added password change flow and default-password enforcement
 
 - **2026-02-11:** Completed 02-02-PLAN.md - Added role dashboards and role-based redirects
 - **2026-02-11:** Completed 02-01-PLAN.md - Added user unit/password flags, login session metadata, and role guards
@@ -92,6 +94,6 @@ None currently identified.
 
 ## Session Continuity
 
-**Last session:** 2026-02-11 04:41
-**Stopped at:** Completed 03-01-PLAN.md
+**Last session:** 2026-02-11 04:48
+**Stopped at:** Completed 03-03-PLAN.md
 **Resume file:** None
