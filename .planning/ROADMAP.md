@@ -93,12 +93,14 @@ Plans:
 7. Admin can view current stock levels with breakdown (Available/Reserved/Used)
 8. System blocks new requests when item's available stock is zero
 
-**Plans:** 3 plans (0/3 complete)
+**Plans:** 3 plans (3/3 complete)
 
 Plans:
-- [ ] 03-01-PLAN.md — Stock schema + core models (categories, items, movements)
-- [ ] 03-02-PLAN.md — Manual stock CRUD UI with alerts and breakdown
-- [ ] 03-03-PLAN.md — Excel restock import with preview + template
+- [x] 03-01-PLAN.md — Stock schema + core models (categories, items, movements)
+- [x] 03-02-PLAN.md — Manual stock CRUD UI with alerts and breakdown
+- [x] 03-03-PLAN.md — Excel restock import with preview + template
+
+**Completed:** 2026-02-11
 
 ---
 
@@ -121,6 +123,13 @@ Plans:
 7. Admin can mark items as delivered using checklist, and system deducts from Reserved and adds to Used
 8. System auto-cancels undelivered quantities after partial delivery (returns to Available from Reserved)
 9. Request status transitions correctly: pending → approved → delivered/rejected
+
+**Plans:** 3 plans
+
+Plans:
+- [x] 04-01-PLAN.md — Request schema + transactional stock transitions
+- [ ] 04-02-PLAN.md — Pegawai request create/list/detail/cancel UI
+- [ ] 04-03-PLAN.md — Admin request review/approve/reject/deliver UI
 
 ---
 
@@ -169,12 +178,12 @@ Plans:
 |-------|------|--------------|--------|----------|
 | 1 | Project Setup & Configuration | Infrastructure | Complete | 100% (4/4 plans complete) |
 | 2 | Authentication & User Management | 6 | Complete | 100% (4/4 plans complete) |
-| 3 | Stock Management | 11 | Pending | 0% |
-| 4 | Request Management Workflow | 14 | Pending | 0% |
+| 3 | Stock Management | 11 | Complete | 100% (3/3 plans complete) |
+| 4 | Request Management Workflow | 14 | In progress | 33% (1/3 plans complete) |
 | 5 | Notifications | 5 | Pending | 0% |
 | 6 | Reports & Audit Trail | 9 | Pending | 0% |
 
-**Overall Progress:** 2/6 phases complete (33%)
+**Overall Progress:** 3/6 phases complete (50%)
 
 ---
 
