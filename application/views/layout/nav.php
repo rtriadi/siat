@@ -276,7 +276,7 @@
             </li>
         </ul>
     </li>
-    <?php if ($this->fungsi->user_login()->role == 'Admin'): ?>
+    <?php if ((int) $this->session->userdata('level') === 1): ?>
         <li class="nav-header">Manual</li>
         <li class="nav-item">
             <a href="<?= site_url('skm') ?>" class="nav-link <?= $page == 'SKM' ? 'active' : '' ?>">
@@ -427,6 +427,25 @@
                 <i class="nav-icon fas fa-boxes"></i>
                 <p>
                     Stock Management
+                </p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="<?= site_url('request_admin') ?>" class="nav-link <?= $page == 'Request Management' || $page == 'Detail Permintaan' || $page == 'Approve Permintaan' || $page == 'Deliver Permintaan' ? 'active' : '' ?>">
+                <i class="nav-icon fas fa-clipboard-list"></i>
+                <p>
+                    Request Management
+                </p>
+            </a>
+        </li>
+    <?php endif ?>
+    <?php if ((int) $this->session->userdata('level') === 2): ?>
+        <li class="nav-header">Inventori</li>
+        <li class="nav-item">
+            <a href="<?= site_url('request') ?>" class="nav-link <?= $page == 'Permintaan ATK' || $page == 'Buat Permintaan' || $page == 'Detail Permintaan' ? 'active' : '' ?>">
+                <i class="nav-icon fas fa-clipboard-list"></i>
+                <p>
+                    Permintaan ATK
                 </p>
             </a>
         </li>
