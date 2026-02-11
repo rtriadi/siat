@@ -143,6 +143,12 @@ Plans:
 
 **Requirements Mapped:** NOTIF-01, NOTIF-02, NOTIF-03, NOTIF-04, NOTIF-05
 
+**Plans:** 2 plans (1/2 complete)
+
+Plans:
+- [x] 05-01-PLAN.md — Notification schema + model + lifecycle emits
+- [ ] 05-02-PLAN.md — Notification list UI + unread badge + mark read
+
 **Success Criteria:**
 
 1. Pegawai receives in-app notification when their request is approved

@@ -1,7 +1,7 @@
 # STATE: SIAT - Sistem Inventori ATK Terpadu
 
 **Last Updated:** 2026-02-11  
-**Session ID:** Phase 4 execution
+**Session ID:** Phase 5 execution
 
 ---
 
@@ -16,21 +16,21 @@
 ## Current Position
 
 **Phase:** 5 of 6 (Notifications)  
-**Plan:** 0 of 0 in current phase  
-**Status:** Not started  
-**Last activity:** 2026-02-11 - Phase 4 verified and closed  
-**Progress:** ░░░░░░░░░░ 0%
+**Plan:** 1 of 2 in current phase  
+**Status:** In progress  
+**Last activity:** 2026-02-11 - Completed 05-01-PLAN.md  
+**Progress:** ███████░░░ 50%
 
 ---
 
 ## Performance Metrics
 
 **Phases Completed:** 4/6 (67%)  
-**Requirements Delivered:** 31/45 (69%)  
+**Requirements Delivered:** 34/45 (76%)  
 **Blockers:** None  
 **Velocity:** N/A (project start)
 
-**Next Milestone:** Start Phase 5 - Notifications
+**Next Milestone:** Continue Phase 5 - Notifications (05-02)
 
 ---
 
@@ -60,6 +60,7 @@
 | Two-role system (Admin, Pegawai) | Matches business requirements - Admin manages warehouse, Pegawai requests items | 2026-02-10 | ✓ Complete |
 | Session level enforces role guards | Simple Admin=1 / Pegawai=2 checks for route protection | 2026-02-11 | ✓ Complete |
 | Enforce default password change | Pegawai with NIP default password must change on login | 2026-02-11 | ✓ Complete |
+| Notifications are transactional with workflow changes | Notification inserts roll back with request/stock transactions | 2026-02-11 | ✓ Complete |
 
 ### Active TODOs
 
@@ -81,6 +82,7 @@ None currently identified.
 
 - **2026-02-11:** Completed 04-02-PLAN.md - Pegawai request create/list/detail/cancel UI
 - **2026-02-11:** Completed 04-03-PLAN.md - Admin request review/approve/reject/deliver UI
+- **2026-02-11:** Completed 05-01-PLAN.md - Notification schema, model, and emits
 - **2026-02-11:** Completed 04-01-PLAN.md - Request schema and transactional stock transitions
 - **2026-02-11:** Completed 03-02-PLAN.md - Admin stock CRUD UI with category display and low-stock alerts
 - **2026-02-11:** Completed 03-01-PLAN.md - Stock schema with three-state tracking and transactional models
@@ -99,6 +101,6 @@ None currently identified.
 
 ## Session Continuity
 
-**Last session:** 2026-02-11 11:47
-**Stopped at:** Completed 04-03-PLAN.md
+**Last session:** 2026-02-11 14:40
+**Stopped at:** Completed 05-01-PLAN.md
 **Resume file:** None
