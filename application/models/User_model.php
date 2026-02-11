@@ -42,4 +42,78 @@ class User_model extends CI_Model
             array('id_user' => $id_user)
         );
     }
+
+    public function get_existing_nips($nips)
+    {
+        if (empty($nips)) {
+            return [];
+        }
+
+        $result = $this->db
+            ->select('nip, username')
+            ->from('user')
+            ->group_start()
+                ->where_in('nip', $nips)
+                ->or_where_in('username', $nips)
+            ->group_end()
+            ->get()
+            ->result_array();
+
+        $existing = [];
+        foreach ($result as $row) {
+            if (!empty($row['nip'])) {
+                $existing[] = $row['nip'];
+            }
+            if (!empty($row['username'])) {
+                $existing[] = $row['username'];
+            }
+        }
+
+        return array_values(array_unique($existing));
+    }
+
+    public function insert_pegawai_batch($rows)
+    {
+        if (empty($rows)) {
+            return [
+                'success' => false,
+                'inserted' => 0,
+                'message' => 'Tidak ada data yang diimport.',
+            ];
+        }
+
+        $payload = [];
+        foreach ($rows as $row) {
+            $nip = $row['nip'];
+            $payload[] = [
+                'username' => $nip,
+                'password' => password_hash($nip, PASSWORD_DEFAULT),
+                'nama' => $row['nama'],
+                'nip' => $nip,
+                'unit' => $row['unit'],
+                'level' => 2,
+                'must_change_password' => 1,
+                'is_active' => 1,
+            ];
+        }
+
+        $this->db->trans_start();
+        $this->db->insert_batch('user', $payload);
+        $this->db->trans_complete();
+
+        if ($this->db->trans_status() === false) {
+            $error = $this->db->error();
+            return [
+                'success' => false,
+                'inserted' => 0,
+                'message' => $error['message'] ?? 'Gagal menyimpan data.',
+            ];
+        }
+
+        return [
+            'success' => true,
+            'inserted' => count($payload),
+            'message' => 'OK',
+        ];
+    }
 }
