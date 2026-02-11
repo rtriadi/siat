@@ -27,3 +27,7 @@
 - Added request schema tables and stock movement enum updates for request lifecycle.
 - Implemented request lifecycle model with transactional stock reservation and delivery logic.
 - Added stock reservation, delivery, and release helpers with movement logging.
+## 2026-02-11
+- Added Pegawai request controller for create/list/detail/cancel with stock validation.
+- Built Pegawai request views (form, list, detail) with status display.
+- Added Pegawai navigation link for Permintaan ATK.

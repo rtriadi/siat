@@ -128,7 +128,7 @@ Plans:
 
 Plans:
 - [x] 04-01-PLAN.md — Request schema + transactional stock transitions
-- [ ] 04-02-PLAN.md — Pegawai request create/list/detail/cancel UI
+- [x] 04-02-PLAN.md — Pegawai request create/list/detail/cancel UI
 - [ ] 04-03-PLAN.md — Admin request review/approve/reject/deliver UI
 
 ---
@@ -179,7 +179,7 @@ Plans:
 | 1 | Project Setup & Configuration | Infrastructure | Complete | 100% (4/4 plans complete) |
 | 2 | Authentication & User Management | 6 | Complete | 100% (4/4 plans complete) |
 | 3 | Stock Management | 11 | Complete | 100% (3/3 plans complete) |
-| 4 | Request Management Workflow | 14 | In progress | 33% (1/3 plans complete) |
+| 4 | Request Management Workflow | 14 | In progress | 67% (2/3 plans complete) |
 | 5 | Notifications | 5 | Pending | 0% |
 | 6 | Reports & Audit Trail | 9 | Pending | 0% |
 
