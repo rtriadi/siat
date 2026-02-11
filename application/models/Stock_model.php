@@ -210,6 +210,144 @@ class Stock_model extends CI_Model
         ];
     }
 
+    public function reserve_stock($item_id, $qty, $user_id, $reason)
+    {
+        $qty = (int) $qty;
+
+        if ($qty <= 0) {
+            return [
+                'success' => false,
+                'message' => 'Jumlah reservasi tidak valid.'
+            ];
+        }
+
+        $this->db->set('available_qty', "available_qty - {$qty}", false);
+        $this->db->set('reserved_qty', "reserved_qty + {$qty}", false);
+        $this->db->where('id_item', $item_id);
+        $this->db->where('available_qty >=', $qty);
+        $this->db->update('stock_item');
+
+        if ($this->db->affected_rows() === 0) {
+            return [
+                'success' => false,
+                'message' => 'Stok tersedia tidak mencukupi.'
+            ];
+        }
+
+        $this->db->insert('stock_movement', [
+            'item_id' => $item_id,
+            'movement_type' => 'reserve',
+            'qty_delta' => $qty,
+            'reason' => $reason,
+            'user_id' => $user_id
+        ]);
+
+        if ($this->db->affected_rows() === 0) {
+            $error = $this->db->error();
+            return [
+                'success' => false,
+                'message' => $error['message'] ?? 'Gagal mencatat reservasi stok.'
+            ];
+        }
+
+        return [
+            'success' => true,
+            'message' => 'Stok berhasil direservasi.'
+        ];
+    }
+
+    public function deliver_stock($item_id, $qty, $user_id, $reason)
+    {
+        $qty = (int) $qty;
+
+        if ($qty <= 0) {
+            return [
+                'success' => false,
+                'message' => 'Jumlah pengiriman tidak valid.'
+            ];
+        }
+
+        $this->db->set('reserved_qty', "reserved_qty - {$qty}", false);
+        $this->db->set('used_qty', "used_qty + {$qty}", false);
+        $this->db->where('id_item', $item_id);
+        $this->db->where('reserved_qty >=', $qty);
+        $this->db->update('stock_item');
+
+        if ($this->db->affected_rows() === 0) {
+            return [
+                'success' => false,
+                'message' => 'Stok reservasi tidak mencukupi untuk dikirim.'
+            ];
+        }
+
+        $this->db->insert('stock_movement', [
+            'item_id' => $item_id,
+            'movement_type' => 'deliver',
+            'qty_delta' => $qty,
+            'reason' => $reason,
+            'user_id' => $user_id
+        ]);
+
+        if ($this->db->affected_rows() === 0) {
+            $error = $this->db->error();
+            return [
+                'success' => false,
+                'message' => $error['message'] ?? 'Gagal mencatat pengiriman stok.'
+            ];
+        }
+
+        return [
+            'success' => true,
+            'message' => 'Stok berhasil dikirim.'
+        ];
+    }
+
+    public function release_reserved_stock($item_id, $qty, $user_id, $reason)
+    {
+        $qty = (int) $qty;
+
+        if ($qty <= 0) {
+            return [
+                'success' => false,
+                'message' => 'Jumlah pembatalan tidak valid.'
+            ];
+        }
+
+        $this->db->set('reserved_qty', "reserved_qty - {$qty}", false);
+        $this->db->set('available_qty', "available_qty + {$qty}", false);
+        $this->db->where('id_item', $item_id);
+        $this->db->where('reserved_qty >=', $qty);
+        $this->db->update('stock_item');
+
+        if ($this->db->affected_rows() === 0) {
+            return [
+                'success' => false,
+                'message' => 'Stok reservasi tidak mencukupi untuk dikembalikan.'
+            ];
+        }
+
+        $this->db->insert('stock_movement', [
+            'item_id' => $item_id,
+            'movement_type' => 'cancel',
+            'qty_delta' => $qty,
+            'reason' => $reason,
+            'user_id' => $user_id
+        ]);
+
+        if ($this->db->affected_rows() === 0) {
+            $error = $this->db->error();
+            return [
+                'success' => false,
+                'message' => $error['message'] ?? 'Gagal mencatat pembatalan reservasi.'
+            ];
+        }
+
+        return [
+            'success' => true,
+            'message' => 'Reservasi stok berhasil dibatalkan.'
+        ];
+    }
+
     /**
      * Bulk restock via batch update with transaction
      * @param array $items Array of ['id_item' => int, 'qty_delta' => int, 'reason' => string]
