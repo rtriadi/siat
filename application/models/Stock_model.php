@@ -3,6 +3,53 @@ defined('BASEPATH') or exit('No direct script access allowed');
 
 class Stock_model extends CI_Model
 {
+    private function get_admin_user_ids()
+    {
+        $rows = $this->db
+            ->select('id_user')
+            ->from('user')
+            ->where('level', 1)
+            ->where('is_active', 1)
+            ->get()
+            ->result_array();
+
+        $admin_ids = [];
+        foreach ($rows as $row) {
+            $admin_ids[] = (int) $row['id_user'];
+        }
+
+        return $admin_ids;
+    }
+
+    private function notify_low_stock($item)
+    {
+        if (!$item) {
+            return ['success' => true];
+        }
+
+        $available = (int) $item['available_qty'];
+        $threshold = (int) $item['low_stock_threshold'];
+        if ($available > $threshold) {
+            return ['success' => true];
+        }
+
+        $this->load->model('Notification_model');
+        $admin_ids = $this->get_admin_user_ids();
+        $message = sprintf(
+            'Stok %s tersisa %d (minimum %d).',
+            $item['item_name'],
+            $available,
+            $threshold
+        );
+
+        return $this->Notification_model->create_for_users(
+            $admin_ids,
+            'Stok menipis',
+            $message,
+            'stock',
+            $item['id_item']
+        );
+    }
     /**
      * Get all items with category join
      * @param array $filters Optional filters (category_id, low_stock_only)
@@ -176,7 +223,7 @@ class Stock_model extends CI_Model
         }
 
         // Begin transaction
-        $this->db->trans_start();
+        $this->db->trans_begin();
 
         // Update stock
         $this->db->update(
@@ -194,15 +241,26 @@ class Stock_model extends CI_Model
             'user_id' => $user_id
         ]);
 
-        $this->db->trans_complete();
-
         if ($this->db->trans_status() === false) {
             $error = $this->db->error();
+            $this->db->trans_rollback();
             return [
                 'success' => false,
                 'message' => $error['message'] ?? 'Gagal menyesuaikan stok.'
             ];
         }
+
+        $latest = $this->get_by_id($id_item);
+        $notify = $this->notify_low_stock($latest);
+        if (!$notify['success']) {
+            $this->db->trans_rollback();
+            return [
+                'success' => false,
+                'message' => $notify['message'] ?? 'Gagal membuat notifikasi stok menipis.'
+            ];
+        }
+
+        $this->db->trans_commit();
 
         return [
             'success' => true,
@@ -221,6 +279,8 @@ class Stock_model extends CI_Model
             ];
         }
 
+        $this->db->trans_begin();
+
         $this->db->set('available_qty', "available_qty - {$qty}", false);
         $this->db->set('reserved_qty', "reserved_qty + {$qty}", false);
         $this->db->where('id_item', $item_id);
@@ -228,6 +288,7 @@ class Stock_model extends CI_Model
         $this->db->update('stock_item');
 
         if ($this->db->affected_rows() === 0) {
+            $this->db->trans_rollback();
             return [
                 'success' => false,
                 'message' => 'Stok tersedia tidak mencukupi.'
@@ -244,11 +305,33 @@ class Stock_model extends CI_Model
 
         if ($this->db->affected_rows() === 0) {
             $error = $this->db->error();
+            $this->db->trans_rollback();
             return [
                 'success' => false,
                 'message' => $error['message'] ?? 'Gagal mencatat reservasi stok.'
             ];
         }
+
+        if ($this->db->trans_status() === false) {
+            $error = $this->db->error();
+            $this->db->trans_rollback();
+            return [
+                'success' => false,
+                'message' => $error['message'] ?? 'Gagal mencatat reservasi stok.'
+            ];
+        }
+
+        $item = $this->get_by_id($item_id);
+        $notify = $this->notify_low_stock($item);
+        if (!$notify['success']) {
+            $this->db->trans_rollback();
+            return [
+                'success' => false,
+                'message' => $notify['message'] ?? 'Gagal membuat notifikasi stok menipis.'
+            ];
+        }
+
+        $this->db->trans_commit();
 
         return [
             'success' => true,
@@ -267,6 +350,8 @@ class Stock_model extends CI_Model
             ];
         }
 
+        $this->db->trans_begin();
+
         $this->db->set('reserved_qty', "reserved_qty - {$qty}", false);
         $this->db->set('used_qty', "used_qty + {$qty}", false);
         $this->db->where('id_item', $item_id);
@@ -274,6 +359,7 @@ class Stock_model extends CI_Model
         $this->db->update('stock_item');
 
         if ($this->db->affected_rows() === 0) {
+            $this->db->trans_rollback();
             return [
                 'success' => false,
                 'message' => 'Stok reservasi tidak mencukupi untuk dikirim.'
@@ -290,11 +376,33 @@ class Stock_model extends CI_Model
 
         if ($this->db->affected_rows() === 0) {
             $error = $this->db->error();
+            $this->db->trans_rollback();
             return [
                 'success' => false,
                 'message' => $error['message'] ?? 'Gagal mencatat pengiriman stok.'
             ];
         }
+
+        if ($this->db->trans_status() === false) {
+            $error = $this->db->error();
+            $this->db->trans_rollback();
+            return [
+                'success' => false,
+                'message' => $error['message'] ?? 'Gagal mencatat pengiriman stok.'
+            ];
+        }
+
+        $item = $this->get_by_id($item_id);
+        $notify = $this->notify_low_stock($item);
+        if (!$notify['success']) {
+            $this->db->trans_rollback();
+            return [
+                'success' => false,
+                'message' => $notify['message'] ?? 'Gagal membuat notifikasi stok menipis.'
+            ];
+        }
+
+        $this->db->trans_commit();
 
         return [
             'success' => true,
@@ -313,6 +421,8 @@ class Stock_model extends CI_Model
             ];
         }
 
+        $this->db->trans_begin();
+
         $this->db->set('reserved_qty', "reserved_qty - {$qty}", false);
         $this->db->set('available_qty', "available_qty + {$qty}", false);
         $this->db->where('id_item', $item_id);
@@ -320,6 +430,7 @@ class Stock_model extends CI_Model
         $this->db->update('stock_item');
 
         if ($this->db->affected_rows() === 0) {
+            $this->db->trans_rollback();
             return [
                 'success' => false,
                 'message' => 'Stok reservasi tidak mencukupi untuk dikembalikan.'
@@ -336,11 +447,33 @@ class Stock_model extends CI_Model
 
         if ($this->db->affected_rows() === 0) {
             $error = $this->db->error();
+            $this->db->trans_rollback();
             return [
                 'success' => false,
                 'message' => $error['message'] ?? 'Gagal mencatat pembatalan reservasi.'
             ];
         }
+
+        if ($this->db->trans_status() === false) {
+            $error = $this->db->error();
+            $this->db->trans_rollback();
+            return [
+                'success' => false,
+                'message' => $error['message'] ?? 'Gagal mencatat pembatalan reservasi.'
+            ];
+        }
+
+        $item = $this->get_by_id($item_id);
+        $notify = $this->notify_low_stock($item);
+        if (!$notify['success']) {
+            $this->db->trans_rollback();
+            return [
+                'success' => false,
+                'message' => $notify['message'] ?? 'Gagal membuat notifikasi stok menipis.'
+            ];
+        }
+
+        $this->db->trans_commit();
 
         return [
             'success' => true,
@@ -364,10 +497,11 @@ class Stock_model extends CI_Model
             ];
         }
 
-        $this->db->trans_start();
+        $this->db->trans_begin();
 
         $updated_count = 0;
         $movements = [];
+        $stock_changes = [];
 
         foreach ($items as $item_data) {
             $id_item = (int)$item_data['id_item'];
@@ -384,7 +518,8 @@ class Stock_model extends CI_Model
                 continue; // Skip non-existent items
             }
 
-            $new_available = $current['available_qty'] + $qty_delta;
+            $current_available = (int) $current['available_qty'];
+            $new_available = $current_available + $qty_delta;
 
             // Prevent negative stock
             if ($new_available < 0) {
@@ -407,6 +542,11 @@ class Stock_model extends CI_Model
                 'user_id' => $user_id
             ];
 
+            $stock_changes[$id_item] = [
+                'from' => $current_available,
+                'to' => $new_available
+            ];
+
             $updated_count++;
         }
 
@@ -415,16 +555,48 @@ class Stock_model extends CI_Model
             $this->db->insert_batch('stock_movement', $movements);
         }
 
-        $this->db->trans_complete();
-
         if ($this->db->trans_status() === false) {
             $error = $this->db->error();
+            $this->db->trans_rollback();
             return [
                 'success' => false,
                 'updated' => 0,
                 'message' => $error['message'] ?? 'Gagal melakukan restock.'
             ];
         }
+
+        if (!empty($stock_changes)) {
+            $updated_items = $this->db
+                ->from('stock_item')
+                ->where_in('id_item', array_keys($stock_changes))
+                ->get()
+                ->result_array();
+
+            foreach ($updated_items as $item) {
+                $item_id = (int) $item['id_item'];
+                $change = $stock_changes[$item_id] ?? null;
+                if (!$change) {
+                    continue;
+                }
+
+                $threshold = (int) $item['low_stock_threshold'];
+                $was_above = $change['from'] > $threshold;
+                $is_low = $change['to'] <= $threshold;
+                if ($was_above && $is_low) {
+                    $notify = $this->notify_low_stock($item);
+                    if (!$notify['success']) {
+                        $this->db->trans_rollback();
+                        return [
+                            'success' => false,
+                            'updated' => $updated_count,
+                            'message' => $notify['message'] ?? 'Gagal membuat notifikasi stok menipis.'
+                        ];
+                    }
+                }
+            }
+        }
+
+        $this->db->trans_commit();
 
         return [
             'success' => true,

@@ -36,6 +36,8 @@ class Request_model extends CI_Model
 
         $this->db->trans_begin();
 
+        $this->load->model('Notification_model');
+
         $this->db->insert('request_header', [
             'request_no' => $request_no,
             'user_id' => $user_id,
@@ -54,6 +56,36 @@ class Request_model extends CI_Model
                 'qty_delivered' => 0,
                 'note' => $item['note']
             ]);
+        }
+
+        $admin_rows = $this->db
+            ->select('id_user')
+            ->from('user')
+            ->where('level', 1)
+            ->where('is_active', 1)
+            ->get()
+            ->result_array();
+
+        $admin_ids = [];
+        foreach ($admin_rows as $admin) {
+            $admin_ids[] = (int) $admin['id_user'];
+        }
+
+        $notify_admins = $this->Notification_model->create_for_users(
+            $admin_ids,
+            'Permintaan baru',
+            'Permintaan baru dengan nomor ' . $request_no . '.',
+            'request',
+            $request_id
+        );
+
+        if (!$notify_admins['success']) {
+            $this->db->trans_rollback();
+            return [
+                'success' => false,
+                'request_id' => null,
+                'message' => $notify_admins['message'] ?? 'Gagal membuat notifikasi permintaan.'
+            ];
         }
 
         if ($this->db->trans_status() === false) {
@@ -160,6 +192,7 @@ class Request_model extends CI_Model
         }
 
         $this->load->model('Stock_model');
+        $this->load->model('Notification_model');
 
         $this->db->trans_begin();
 
@@ -204,6 +237,22 @@ class Request_model extends CI_Model
             ['id_request' => $request_id]
         );
 
+        $notify_user = $this->Notification_model->create_for_user(
+            (int) $header['user_id'],
+            'Permintaan disetujui',
+            'Permintaan #' . $header['request_no'] . ' telah disetujui.',
+            'request',
+            $request_id
+        );
+
+        if (!$notify_user['success']) {
+            $this->db->trans_rollback();
+            return [
+                'success' => false,
+                'message' => $notify_user['message'] ?? 'Gagal membuat notifikasi persetujuan.'
+            ];
+        }
+
         if ($this->db->trans_status() === false) {
             $error = $this->db->error();
             $this->db->trans_rollback();
@@ -226,6 +275,8 @@ class Request_model extends CI_Model
             return ['success' => false, 'message' => 'Status permintaan tidak dapat ditolak.'];
         }
 
+        $this->load->model('Notification_model');
+
         $this->db->trans_begin();
 
         $this->db->update(
@@ -238,6 +289,22 @@ class Request_model extends CI_Model
             ],
             ['id_request' => $request_id]
         );
+
+        $notify_user = $this->Notification_model->create_for_user(
+            (int) $header['user_id'],
+            'Permintaan ditolak',
+            'Permintaan #' . $header['request_no'] . ' ditolak.',
+            'request',
+            $request_id
+        );
+
+        if (!$notify_user['success']) {
+            $this->db->trans_rollback();
+            return [
+                'success' => false,
+                'message' => $notify_user['message'] ?? 'Gagal membuat notifikasi penolakan.'
+            ];
+        }
 
         if ($this->db->trans_status() === false) {
             $error = $this->db->error();
@@ -308,6 +375,7 @@ class Request_model extends CI_Model
         }
 
         $this->load->model('Stock_model');
+        $this->load->model('Notification_model');
 
         $this->db->trans_begin();
 
@@ -366,6 +434,22 @@ class Request_model extends CI_Model
             ],
             ['id_request' => $request_id]
         );
+
+        $notify_user = $this->Notification_model->create_for_user(
+            (int) $header['user_id'],
+            'Permintaan dikirim',
+            'Permintaan #' . $header['request_no'] . ' telah dikirim.',
+            'request',
+            $request_id
+        );
+
+        if (!$notify_user['success']) {
+            $this->db->trans_rollback();
+            return [
+                'success' => false,
+                'message' => $notify_user['message'] ?? 'Gagal membuat notifikasi pengiriman.'
+            ];
+        }
 
         if ($this->db->trans_status() === false) {
             $error = $this->db->error();
