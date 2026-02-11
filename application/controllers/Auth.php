@@ -54,7 +54,7 @@ class Auth extends CI_Controller
                         'must_change_password' => $user['must_change_password'],
                     ));
                     $this->user_model->update_login_meta($user['id_user'], date('Y-m-d H:i:s'));
-                    redirect('dashboard');
+                    $this->redirect_by_level($user['level']);
                 } else {
                     // Password incorrect
                     $this->session->set_flashdata('error', 'Username atau Password salah!');
@@ -76,7 +76,7 @@ class Auth extends CI_Controller
                         'must_change_password' => $user['must_change_password'],
                     ));
                     $this->user_model->update_login_meta($user['id_user'], date('Y-m-d H:i:s'));
-                    redirect('dashboard');
+                    $this->redirect_by_level($user['level']);
                 } else {
                     // Password incorrect
                     $this->session->set_flashdata('error', 'Username atau Password salah!');
@@ -92,5 +92,18 @@ class Auth extends CI_Controller
         // $this->session->unset_userdata('id_user');
         $this->session->sess_destroy();
         redirect('auth/login'); // Ganti 'auth/login' dengan halaman login
+    }
+
+    private function redirect_by_level($level)
+    {
+        if ((int) $level === 1) {
+            redirect('dashboard');
+        }
+
+        if ((int) $level === 2) {
+            redirect('pegawai');
+        }
+
+        redirect('auth/login');
     }
 }

@@ -5,7 +5,14 @@ function check_already_login()
 	$ci = &get_instance();
 	$user_session = $ci->session->userdata('id_user');
 	if ($user_session) {
-		redirect('dashboard');
+		$level = $ci->session->userdata('level');
+		if ((int) $level === 1) {
+			redirect('dashboard');
+		}
+		if ((int) $level === 2) {
+			redirect('pegawai');
+		}
+		redirect('auth/login');
 	}
 }
 
