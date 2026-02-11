@@ -9,26 +9,28 @@
 
 **Core Value:** Accurate stock tracking with zero anomalies — reserved stock is tracked separately from available stock to prevent over-allocation, and all stock movements are logged for complete auditability.
 
-**Current Focus:** Phase 2 - Authentication & User Management
+**Current Focus:** Phase 3 - Stock Management
 
 ---
 
 ## Current Position
 
-**Phase:** 2 of 6 (Authentication & User Management)  
-**Plan:** 3 of 4 in current phase  
+**Phase:** 3 of 6 (Stock Management)  
+**Plan:** 1 of 3 in current phase  
 **Status:** In progress  
-**Last activity:** 2026-02-11 - Completed 02-04-PLAN.md  
-**Progress:** ██████░░░░ 50%
+**Last activity:** 2026-02-11 - Completed 03-01-PLAN.md  
+**Progress:** █████░░░░░ 42%
 
 ---
 
 ## Performance Metrics
 
-**Phases Completed:** 1/6 (17%)  
-**Requirements Delivered:** 0/45 (0%)  
+**Phases Completed:** 2/6 (33%)  
+**Requirements Delivered:** 6/45 (13%)  
 **Blockers:** None  
 **Velocity:** N/A (project start)
+
+**Next Milestone:** Begin Phase 3 - Stock Management
 
 ---
 
@@ -41,7 +43,10 @@
 | Reserve stock on approval, not request | Prevents race condition where multiple approved requests exceed available stock | 2026-02-10 | Pending implementation |
 | Auto-cancel undelivered quantities | Simplifies admin workflow — no manual cleanup needed | 2026-02-10 | Pending implementation |
 | NIP as default password with reminder | Balance between convenience and security — allows bulk import while encouraging password changes | 2026-02-10 | Pending implementation |
-| Three stock states (Available, Reserved, Used) | Clear separation prevents over-allocation and enables accurate reporting | 2026-02-10 | Pending implementation |
+| Three stock states (Available, Reserved, Used) | Clear separation prevents over-allocation and enables accurate reporting | 2026-02-10 | ✓ Complete |
+| String-based item identifiers | Prevent numeric coercion issues during Excel imports | 2026-02-11 | ✓ Complete |
+| Transactional stock adjustments | All stock changes wrapped in CI3 transactions with movement logging | 2026-02-11 | ✓ Complete |
+| Uniqueness constraint on (category_id, item_name) | Prevents duplicate items within same category | 2026-02-11 | ✓ Complete |
 | Excel import with preview before commit | Prevents bulk data errors — admin can review before saving | 2026-02-10 | Pending implementation |
 | Upgrade SHA1 to bcrypt | Security compliance requirement for government office | 2026-02-10 | ✓ Complete |
 | Hash-on-login migration pattern | Allows transparent SHA1-to-bcrypt upgrade without forcing password resets | 2026-02-10 | ✓ Complete |
@@ -50,6 +55,7 @@
 | VARCHAR(255) for password column | Accommodates bcrypt and future algorithms like Argon2 | 2026-02-10 | ✓ Complete |
 | Two-role system (Admin, Pegawai) | Matches business requirements - Admin manages warehouse, Pegawai requests items | 2026-02-10 | ✓ Complete |
 | Session level enforces role guards | Simple Admin=1 / Pegawai=2 checks for route protection | 2026-02-11 | ✓ Complete |
+| Enforce default password change | Pegawai with NIP default password must change on login | 2026-02-11 | ✓ Complete |
 
 ### Active TODOs
 
@@ -69,6 +75,10 @@ None currently identified.
 
 ### Recent Changes
 
+- **2026-02-11:** Completed 03-01-PLAN.md - Stock schema with three-state tracking and transactional models
+- **2026-02-11:** Phase 2 verified - All auth/account management checks approved
+- **2026-02-11:** Completed 02-03-PLAN.md - Added password change flow and default-password enforcement
+
 - **2026-02-11:** Completed 02-02-PLAN.md - Added role dashboards and role-based redirects
 - **2026-02-11:** Completed 02-01-PLAN.md - Added user unit/password flags, login session metadata, and role guards
 - **2026-02-10:** Completed 01-04-PLAN.md - Verified end-to-end local setup (base URL, assets, admin login, session)
@@ -82,6 +92,6 @@ None currently identified.
 
 ## Session Continuity
 
-**Last session:** 2026-02-11 01:56
-**Stopped at:** Completed 02-04-PLAN.md
+**Last session:** 2026-02-11 04:41
+**Stopped at:** Completed 03-01-PLAN.md
 **Resume file:** None
