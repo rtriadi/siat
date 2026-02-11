@@ -53,13 +53,13 @@ Plans:
 
 **Requirements Mapped:** AUTH-01, AUTH-02, AUTH-03, AUTH-04, AUTH-05, AUTH-06
 
-**Plans:** 4 plans (1/4 complete)
+**Plans:** 4 plans (3/4 complete)
 
 Plans:
 - [x] 02-01-PLAN.md — Core auth/session state + schema flags
-- [ ] 02-02-PLAN.md — Role-based dashboards and redirects
+- [x] 02-02-PLAN.md — Role-based dashboards and redirects
 - [ ] 02-03-PLAN.md — Password change + default-password enforcement
-- [ ] 02-04-PLAN.md — Employee import preview + template download
+- [x] 02-04-PLAN.md — Employee import preview + template download
 
 **Success Criteria:**
 
@@ -159,7 +159,7 @@ Plans:
 | Phase | Goal | Requirements | Status | Progress |
 |-------|------|--------------|--------|----------|
 | 1 | Project Setup & Configuration | Infrastructure | Complete | 100% (4/4 plans complete) |
-| 2 | Authentication & User Management | 6 | In progress | 25% (1/4 plans complete) |
+| 2 | Authentication & User Management | 6 | In progress | 75% (3/4 plans complete) |
 | 3 | Stock Management | 11 | Pending | 0% |
 | 4 | Request Management Workflow | 14 | Pending | 0% |
 | 5 | Notifications | 5 | Pending | 0% |
