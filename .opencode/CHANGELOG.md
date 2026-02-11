@@ -31,3 +31,5 @@
 - Added Pegawai request controller for create/list/detail/cancel with stock validation.
 - Built Pegawai request views (form, list, detail) with status display.
 - Added Pegawai navigation link for Permintaan ATK.
+## 2026-02-11
+- Completed Phase 4 Plan 3 summary and state updates for admin request workflow.
