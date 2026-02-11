@@ -160,4 +160,18 @@ class Notification_model extends CI_Model
             'message' => 'Notifikasi ditandai dibaca.'
         ];
     }
+
+    public function count_unread($user_id)
+    {
+        $user_id = (int) $user_id;
+        if ($user_id <= 0) {
+            return 0;
+        }
+
+        return (int) $this->db
+            ->from('notification')
+            ->where('user_id', $user_id)
+            ->where('is_read', 0)
+            ->count_all_results();
+    }
 }

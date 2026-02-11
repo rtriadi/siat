@@ -438,6 +438,17 @@
                 </p>
             </a>
         </li>
+        <li class="nav-item">
+            <a href="<?= site_url('notification') ?>" class="nav-link <?= $page == 'Notifications' ? 'active' : '' ?>">
+                <i class="nav-icon fas fa-bell"></i>
+                <p>
+                    Notifications
+                    <?php if (!empty($unread_notifications) && (int) $unread_notifications > 0): ?>
+                        <span class="right badge badge-danger"><?= (int) $unread_notifications ?></span>
+                    <?php endif; ?>
+                </p>
+            </a>
+        </li>
     <?php endif ?>
     <?php if ((int) $this->session->userdata('level') === 2): ?>
         <li class="nav-header">Inventori</li>
@@ -446,6 +457,17 @@
                 <i class="nav-icon fas fa-clipboard-list"></i>
                 <p>
                     Permintaan ATK
+                </p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="<?= site_url('notification') ?>" class="nav-link <?= $page == 'Notifications' ? 'active' : '' ?>">
+                <i class="nav-icon fas fa-bell"></i>
+                <p>
+                    Notifications
+                    <?php if (!empty($unread_notifications) && (int) $unread_notifications > 0): ?>
+                        <span class="right badge badge-danger"><?= (int) $unread_notifications ?></span>
+                    <?php endif; ?>
                 </p>
             </a>
         </li>
