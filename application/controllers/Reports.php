@@ -124,20 +124,132 @@ class Reports extends CI_Controller
 
     public function stock_movement()
     {
+        $this->load->model('Stock_model');
+        $this->load->model('Category_model');
+
+        $filters = [
+            'date_start' => $this->input->get('date_start'),
+            'date_end' => $this->input->get('date_end'),
+            'item_id' => $this->input->get('item_id'),
+            'category_id' => $this->input->get('category_id')
+        ];
+
+        $filters = array_filter($filters, function ($value) {
+            return $value !== null && $value !== '';
+        });
+
+        $rows = $this->Stock_model->get_stock_movement_report($filters);
+
+        // Get filter data for dropdowns
+        $items = $this->Stock_model->get_all();
+        $categories = $this->Category_model->get_all();
+
         $data = [
             'page' => 'Stock Movement',
-            'rows' => []
+            'rows' => $rows,
+            'items' => $items,
+            'categories' => $categories,
+            'filters' => $filters
         ];
+
         $this->template->load('layout/template', 'reports/stock_movement', $data);
     }
 
     public function audit_trail()
     {
+        $this->load->model('Stock_model');
+        $this->load->model('Category_model');
+
+        $filters = [
+            'date_start' => $this->input->get('date_start'),
+            'date_end' => $this->input->get('date_end'),
+            'item_id' => $this->input->get('item_id'),
+            'category_id' => $this->input->get('category_id')
+        ];
+
+        $filters = array_filter($filters, function ($value) {
+            return $value !== null && $value !== '';
+        });
+
+        $rows = $this->Stock_model->get_audit_trail_report($filters);
+
+        // Get filter data for dropdowns
+        $items = $this->Stock_model->get_all();
+        $categories = $this->Category_model->get_all();
+
         $data = [
             'page' => 'Audit Trail',
-            'rows' => []
+            'rows' => $rows,
+            'items' => $items,
+            'categories' => $categories,
+            'filters' => $filters
         ];
+
         $this->template->load('layout/template', 'reports/audit_trail', $data);
+    }
+
+    public function export_stock_movement()
+    {
+        $this->load->model('Stock_model');
+
+        $filters = [
+            'date_start' => $this->input->get('date_start'),
+            'date_end' => $this->input->get('date_end'),
+            'item_id' => $this->input->get('item_id'),
+            'category_id' => $this->input->get('category_id')
+        ];
+
+        $filters = array_filter($filters, function ($value) {
+            return $value !== null && $value !== '';
+        });
+
+        $rows = $this->Stock_model->get_stock_movement_report($filters);
+
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle('Stock Movement');
+
+        $headers = [
+            'Tanggal',
+            'Item',
+            'Kategori',
+            'Tipe',
+            'Qty',
+            'Reason',
+            'User',
+            'Running Balance'
+        ];
+
+        foreach ($headers as $col => $header) {
+            $sheet->setCellValueByColumnAndRow($col + 1, 1, $header);
+        }
+
+        $row_num = 2;
+        foreach ($rows as $row) {
+            $sheet->setCellValueByColumnAndRow(1, $row_num, $row['created_at']);
+            $sheet->setCellValueByColumnAndRow(2, $row_num, $row['item_name'] ?? '-');
+            $sheet->setCellValueByColumnAndRow(3, $row_num, $row['category_name'] ?? '-');
+            $sheet->setCellValueByColumnAndRow(4, $row_num, $this->translate_movement_type($row['movement_type']));
+            $sheet->setCellValueByColumnAndRow(5, $row_num, $row['qty_delta']);
+            $sheet->setCellValueByColumnAndRow(6, $row_num, $row['reason'] ?? '');
+            $sheet->setCellValueByColumnAndRow(7, $row_num, $row['user_name'] ?? '-');
+            $sheet->setCellValueByColumnAndRow(8, $row_num, $row['running_balance'] ?? 0);
+            $row_num++;
+        }
+
+        foreach (range('A', 'H') as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        $filename = 'stock_movement_' . date('Y-m-d_His') . '.xlsx';
+
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="' . $filename . '"');
+        header('Cache-Control: max-age=0');
+
+        $writer = new XlsxWriter($spreadsheet);
+        $writer->save('php://output');
+        exit;
     }
 
     public function stock_levels()
@@ -159,5 +271,18 @@ class Reports extends CI_Controller
             'cancelled' => 'Dibatalkan'
         ];
         return $map[$status] ?? $status;
+    }
+
+    private function translate_movement_type($type)
+    {
+        $map = [
+            'in' => 'Masuk',
+            'out' => 'Keluar',
+            'adjust' => 'Penyesuaian',
+            'reserve' => 'Reservasi',
+            'cancel' => 'Batal Reservasi',
+            'deliver' => 'Pengiriman'
+        ];
+        return $map[$type] ?? $type;
     }
 }
