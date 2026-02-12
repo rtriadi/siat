@@ -462,6 +462,57 @@ class Request_model extends CI_Model
         return ['success' => true, 'message' => 'Permintaan telah dikirim.'];
     }
 
+    public function get_request_history_report(array $filters = [])
+    {
+        $this->db
+            ->select([
+                'request_header.id_request',
+                'request_header.request_no',
+                'request_header.status',
+                'request_header.created_at',
+                'request_header.approved_at',
+                'request_header.delivered_at',
+                'request_item.id_request_item',
+                'request_item.qty_requested',
+                'request_item.qty_approved',
+                'request_item.qty_delivered',
+                'request_item.note as item_note',
+                'stock_item.item_name',
+                'user.id_user',
+                'user.nama',
+                'user.nip',
+                'user.unit'
+            ])
+            ->from('request_header')
+            ->join('request_item', 'request_item.request_id = request_header.id_request', 'inner')
+            ->join('stock_item', 'stock_item.id_item = request_item.item_id', 'left')
+            ->join('user', 'user.id_user = request_header.user_id', 'left');
+
+        if (!empty($filters['date_start'])) {
+            $date_start = date('Y-m-d 00:00:00', strtotime($filters['date_start']));
+            $this->db->where('request_header.created_at >=', $date_start);
+        }
+
+        if (!empty($filters['date_end'])) {
+            $date_end = date('Y-m-d 23:59:59', strtotime($filters['date_end']));
+            $this->db->where('request_header.created_at <=', $date_end);
+        }
+
+        if (!empty($filters['status'])) {
+            $this->db->where('request_header.status', $filters['status']);
+        }
+
+        if (!empty($filters['user_id'])) {
+            $this->db->where('request_header.user_id', (int) $filters['user_id']);
+        }
+
+        $this->db
+            ->order_by('request_header.created_at', 'DESC')
+            ->order_by('request_item.id_request_item', 'ASC');
+
+        return $this->db->get()->result_array();
+    }
+
     private function generate_request_no()
     {
         $prefix = 'REQ-' . date('Ymd');
