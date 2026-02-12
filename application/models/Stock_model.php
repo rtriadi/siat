@@ -623,4 +623,147 @@ class Stock_model extends CI_Model
             ->get()
             ->result_array();
     }
+
+    /**
+     * Get stock movement report with running balance
+     * @param array $filters (date_start, date_end, item_id, category_id)
+     * @return array
+     */
+    public function get_stock_movement_report(array $filters = [])
+    {
+        // Build base query with joins
+        $this->db
+            ->select('stock_movement.*, stock_item.item_name, stock_category.category_name, user.nama as user_name')
+            ->from('stock_movement')
+            ->join('stock_item', 'stock_item.id_item = stock_movement.item_id', 'left')
+            ->join('stock_category', 'stock_category.id_category = stock_item.category_id', 'left')
+            ->join('user', 'user.id_user = stock_movement.user_id', 'left');
+
+        // Apply date range filter (inclusive)
+        if (!empty($filters['date_start'])) {
+            $this->db->where('stock_movement.created_at >=', $filters['date_start'] . ' 00:00:00');
+        }
+        if (!empty($filters['date_end'])) {
+            $this->db->where('stock_movement.created_at <=', $filters['date_end'] . ' 23:59:59');
+        }
+
+        // Apply item filter
+        if (!empty($filters['item_id'])) {
+            $this->db->where('stock_movement.item_id', $filters['item_id']);
+        }
+
+        // Apply category filter
+        if (!empty($filters['category_id'])) {
+            $this->db->where('stock_item.category_id', $filters['category_id']);
+        }
+
+        // Get all movements ordered by date ASC for running balance calculation
+        $movements = $this->db
+            ->order_by('stock_movement.created_at', 'ASC')
+            ->get()
+            ->result_array();
+
+        // Compute running balance
+        return $this->compute_running_balance($movements);
+    }
+
+    /**
+     * Get audit trail report (optimized for audit log view)
+     * @param array $filters (date_start, date_end, item_id, category_id)
+     * @return array
+     */
+    public function get_audit_trail_report(array $filters = [])
+    {
+        // Build base query with joins
+        $this->db
+            ->select('stock_movement.*, stock_item.item_name, stock_category.category_name, user.nama as user_name')
+            ->from('stock_movement')
+            ->join('stock_item', 'stock_item.id_item = stock_movement.item_id', 'left')
+            ->join('stock_category', 'stock_category.id_category = stock_item.category_id', 'left')
+            ->join('user', 'user.id_user = stock_movement.user_id', 'left');
+
+        // Apply date range filter (inclusive)
+        if (!empty($filters['date_start'])) {
+            $this->db->where('stock_movement.created_at >=', $filters['date_start'] . ' 00:00:00');
+        }
+        if (!empty($filters['date_end'])) {
+            $this->db->where('stock_movement.created_at <=', $filters['date_end'] . ' 23:59:59');
+        }
+
+        // Apply item filter
+        if (!empty($filters['item_id'])) {
+            $this->db->where('stock_movement.item_id', $filters['item_id']);
+        }
+
+        // Apply category filter
+        if (!empty($filters['category_id'])) {
+            $this->db->where('stock_item.category_id', $filters['category_id']);
+        }
+
+        // Return ordered by date DESC (newest first for audit trail view)
+        return $this->db
+            ->order_by('stock_movement.created_at', 'DESC')
+            ->get()
+            ->result_array();
+    }
+
+    /**
+     * Compute running balance for stock movements
+     * Movement type delta mapping:
+     * - in: +qty (adds to available)
+     * - out: -qty (subtracts from available)
+     * - adjust: +qty (manual adjustment, can be positive or negative)
+     * - reserve: -qty (moves from available to reserved)
+     * - cancel: +qty (returns reserved to available)
+     * - deliver: 0 (no change to available, moves from reserved to used)
+     * @param array $movements
+     * @return array
+     */
+    private function compute_running_balance(array $movements)
+    {
+        // Group movements by item to compute running balance per item
+        $item_balances = [];
+
+        foreach ($movements as &$movement) {
+            $item_id = $movement['item_id'];
+
+            // Initialize balance for this item if not exists
+            if (!isset($item_balances[$item_id])) {
+                $item_balances[$item_id] = 0;
+            }
+
+            // Apply delta based on movement type
+            $delta = 0;
+            $qty_delta = (int) $movement['qty_delta'];
+
+            switch ($movement['movement_type']) {
+                case 'in':
+                    $delta = $qty_delta;
+                    break;
+                case 'out':
+                    $delta = -$qty_delta;
+                    break;
+                case 'adjust':
+                    $delta = $qty_delta; // Can be positive or negative
+                    break;
+                case 'reserve':
+                    $delta = -$qty_delta;
+                    break;
+                case 'cancel':
+                    $delta = $qty_delta;
+                    break;
+                case 'deliver':
+                    $delta = 0; // No change to available qty
+                    break;
+                default:
+                    $delta = 0;
+            }
+
+            // Update running balance
+            $item_balances[$item_id] += $delta;
+            $movement['running_balance'] = $item_balances[$item_id];
+        }
+
+        return $movements;
+    }
 }
