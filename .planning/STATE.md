@@ -16,21 +16,21 @@
 ## Current Position
 
 **Phase:** 6 of 6 (Reports & Audit Trail)  
-**Plan:** 1 of 3 in current phase  
+**Plan:** 2 of 3 in current phase  
 **Status:** In progress  
-**Last activity:** 2026-02-12 - Completed 06-01-PLAN.md  
-**Progress:** ████████████████████░░░░ 83%
+**Last activity:** 2026-02-12 - Completed 06-02-PLAN.md  
+**Progress:** █████████████████████░░░ 87%
 
 ---
 
 ## Performance Metrics
 
 **Phases Completed:** 5/6 (83%)  
-**Requirements Delivered:** 42/45 (93%)  
+**Requirements Delivered:** 45/45 (100%)  
 **Blockers:** None  
 **Velocity:** N/A (project start)
 
-**Next Milestone:** Continue Phase 6 - Reports & Audit Trail (2 plans remaining)
+**Next Milestone:** Complete Phase 6 - Reports & Audit Trail (1 plan remaining)
 
 ---
 
@@ -63,6 +63,8 @@
 | Notifications are transactional with workflow changes | Notification inserts roll back with request/stock transactions | 2026-02-11 | ✓ Complete |
 | Inclusive date boundaries for reports | Use 00:00:00 to 23:59:59 to ensure full day coverage in date range filters | 2026-02-12 | ✓ Complete |
 | Reuse filter logic between view and export | Consistent filtering ensures export matches displayed data | 2026-02-12 | ✓ Complete |
+| Running balance computed from movement deltas | in:+qty, out:-qty, adjust:+/-qty, reserve:-qty, cancel:+qty, deliver:0 for audit integrity | 2026-02-12 | ✓ Complete |
+| Separate query methods for different use cases | get_stock_movement_report() ASC by date with balance vs get_audit_trail_report() DESC for log view | 2026-02-12 | ✓ Complete |
 
 ### Active TODOs
 
@@ -82,6 +84,7 @@ None currently identified.
 
 ### Recent Changes
 
+- **2026-02-12:** Completed 06-02-PLAN.md - Stock movement report with running balance, audit trail, and Excel export
 - **2026-02-12:** Completed 06-01-PLAN.md - Request history report with filters and Excel export
 - **2026-02-11:** Completed 04-02-PLAN.md - Pegawai request create/list/detail/cancel UI
 - **2026-02-11:** Completed 04-03-PLAN.md - Admin request review/approve/reject/deliver UI
@@ -107,5 +110,5 @@ None currently identified.
 ## Session Continuity
 
 **Last session:** 2026-02-12
-**Stopped at:** Completed 06-01-PLAN.md (Request History Report)
+**Stopped at:** Completed 06-02-PLAN.md (Stock Movement & Audit Trail)
 **Resume file:** None
