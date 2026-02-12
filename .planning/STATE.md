@@ -1,6 +1,6 @@
 # STATE: SIAT - Sistem Inventori ATK Terpadu
 
-**Last Updated:** 2026-02-11  
+**Last Updated:** 2026-02-12  
 **Session ID:** Phase 5 execution
 
 ---
@@ -15,22 +15,22 @@
 
 ## Current Position
 
-**Phase:** 5 of 6 (Notifications)  
-**Plan:** 2 of 2 in current phase  
-**Status:** Phase complete  
-**Last activity:** 2026-02-11 - Completed 05-02-PLAN.md  
-**Progress:** █████████░ 94%
+**Phase:** 6 of 6 (Reports & Audit Trail)  
+**Plan:** 1 of 3 in current phase  
+**Status:** In progress  
+**Last activity:** 2026-02-12 - Completed 06-01-PLAN.md  
+**Progress:** ████████████████████░░░░ 83%
 
 ---
 
 ## Performance Metrics
 
 **Phases Completed:** 5/6 (83%)  
-**Requirements Delivered:** 39/45 (87%)  
+**Requirements Delivered:** 42/45 (93%)  
 **Blockers:** None  
 **Velocity:** N/A (project start)
 
-**Next Milestone:** Begin Phase 6 - Reports & Audit Trail
+**Next Milestone:** Continue Phase 6 - Reports & Audit Trail (2 plans remaining)
 
 ---
 
@@ -61,6 +61,8 @@
 | Session level enforces role guards | Simple Admin=1 / Pegawai=2 checks for route protection | 2026-02-11 | ✓ Complete |
 | Enforce default password change | Pegawai with NIP default password must change on login | 2026-02-11 | ✓ Complete |
 | Notifications are transactional with workflow changes | Notification inserts roll back with request/stock transactions | 2026-02-11 | ✓ Complete |
+| Inclusive date boundaries for reports | Use 00:00:00 to 23:59:59 to ensure full day coverage in date range filters | 2026-02-12 | ✓ Complete |
+| Reuse filter logic between view and export | Consistent filtering ensures export matches displayed data | 2026-02-12 | ✓ Complete |
 
 ### Active TODOs
 
@@ -80,8 +82,10 @@ None currently identified.
 
 ### Recent Changes
 
+- **2026-02-12:** Completed 06-01-PLAN.md - Request history report with filters and Excel export
 - **2026-02-11:** Completed 04-02-PLAN.md - Pegawai request create/list/detail/cancel UI
 - **2026-02-11:** Completed 04-03-PLAN.md - Admin request review/approve/reject/deliver UI
+- **2026-02-12:** Phase 5 verified and closed
 - **2026-02-11:** Completed 05-01-PLAN.md - Notification schema, model, and emits
 - **2026-02-11:** Completed 05-02-PLAN.md - Notification list UI, unread badge, mark read
 - **2026-02-11:** Completed 04-01-PLAN.md - Request schema and transactional stock transitions
@@ -102,6 +106,6 @@ None currently identified.
 
 ## Session Continuity
 
-**Last session:** 2026-02-11 14:50
-**Stopped at:** Completed 05-02-PLAN.md
+**Last session:** 2026-02-12
+**Stopped at:** Completed 06-01-PLAN.md (Request History Report)
 **Resume file:** None

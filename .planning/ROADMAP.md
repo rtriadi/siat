@@ -143,11 +143,13 @@ Plans:
 
 **Requirements Mapped:** NOTIF-01, NOTIF-02, NOTIF-03, NOTIF-04, NOTIF-05
 
-**Plans:** 2 plans (1/2 complete)
+**Plans:** 2 plans (2/2 complete)
 
 Plans:
 - [x] 05-01-PLAN.md — Notification schema + model + lifecycle emits
-- [ ] 05-02-PLAN.md — Notification list UI + unread badge + mark read
+- [x] 05-02-PLAN.md — Notification list UI + unread badge + mark read
+ 
+**Completed:** 2026-02-12
 
 **Success Criteria:**
 
@@ -166,6 +168,13 @@ Plans:
 **Dependencies:** Phase 4 (requires request and stock data)
 
 **Requirements Mapped:** REPORT-01, REPORT-02, REPORT-03, REPORT-04, REPORT-05, REPORT-06, REPORT-07, REPORT-08, REPORT-09
+
+**Plans:** 3 plans (1/3 complete)
+
+Plans:
+- [x] 06-01-PLAN.md — Request history report + filters + Excel export
+- [ ] 06-02-PLAN.md — Stock movement report + audit trail + Excel export
+- [ ] 06-03-PLAN.md — Current stock levels report + Excel export
 
 **Success Criteria:**
 
@@ -188,10 +197,10 @@ Plans:
 | 2 | Authentication & User Management | 6 | Complete | 100% (4/4 plans complete) |
 | 3 | Stock Management | 11 | Complete | 100% (3/3 plans complete) |
 | 4 | Request Management Workflow | 14 | Complete | 100% (3/3 plans complete) |
-| 5 | Notifications | 5 | Pending | 0% |
+| 5 | Notifications | 5 | Complete | 100% (2/2 plans complete) |
 | 6 | Reports & Audit Trail | 9 | Pending | 0% |
 
-**Overall Progress:** 4/6 phases complete (67%)
+**Overall Progress:** 5/6 phases complete (83%)
 
 ---
 
@@ -208,4 +217,4 @@ Plans:
 ---
 
 *Roadmap created: 2026-02-10*  
-*Last updated: 2026-02-11*
+*Last updated: 2026-02-12*
