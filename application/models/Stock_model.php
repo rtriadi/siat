@@ -708,6 +708,30 @@ class Stock_model extends CI_Model
     }
 
     /**
+     * Get stock levels report with category filter
+     * @param array $filters (category_id)
+     * @return array
+     */
+    public function get_stock_levels_report(array $filters = [])
+    {
+        $this->db
+            ->select('stock_item.id_item, stock_item.item_name, stock_item.available_qty, stock_item.reserved_qty, stock_item.used_qty, stock_item.low_stock_threshold, stock_category.category_name')
+            ->from('stock_item')
+            ->join('stock_category', 'stock_category.id_category = stock_item.category_id', 'left');
+
+        // Apply category filter
+        if (!empty($filters['category_id'])) {
+            $this->db->where('stock_item.category_id', $filters['category_id']);
+        }
+
+        return $this->db
+            ->order_by('stock_category.category_name', 'ASC')
+            ->order_by('stock_item.item_name', 'ASC')
+            ->get()
+            ->result_array();
+    }
+
+    /**
      * Compute running balance for stock movements
      * Movement type delta mapping:
      * - in: +qty (adds to available)
