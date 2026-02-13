@@ -71,10 +71,14 @@ class Request_model extends CI_Model
             $admin_ids[] = (int) $admin['id_user'];
         }
 
+        $user = $this->db->select('nama')->get_where('user', ['id_user' => $user_id])->row_array();
+        $user_name = $user['nama'] ?? 'Unknown';
+        $item_count = count($normalized_items);
+
         $notify_admins = $this->Notification_model->create_for_users(
             $admin_ids,
             'Permintaan baru',
-            'Permintaan baru dengan nomor ' . $request_no . '.',
+            'Permintaan baru dari ' . $user_name . ' (' . $item_count . ' item) - No: ' . $request_no,
             'request',
             $request_id
         );
@@ -120,17 +124,27 @@ class Request_model extends CI_Model
     public function get_all($filters = [])
     {
         $this->db->from('request_header');
+        $this->db->join('user', 'user.id_user = request_header.user_id', 'left');
 
         if (!empty($filters['status'])) {
-            $this->db->where('status', $filters['status']);
+            $this->db->where('request_header.status', $filters['status']);
         }
 
         if (!empty($filters['user_id'])) {
-            $this->db->where('user_id', $filters['user_id']);
+            $this->db->where('request_header.user_id', $filters['user_id']);
+        }
+
+        if (!empty($filters['search'])) {
+            $search = $filters['search'];
+            $this->db->group_start();
+            $this->db->like('request_header.request_no', $search);
+            $this->db->or_like('user.nama', $search);
+            $this->db->or_like('user.nip', $search);
+            $this->db->group_end();
         }
 
         return $this->db
-            ->order_by('created_at', 'DESC')
+            ->order_by('request_header.created_at', 'DESC')
             ->get()
             ->result_array();
     }

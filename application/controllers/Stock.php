@@ -15,13 +15,26 @@ class Stock extends CI_Controller
     }
 
     /**
-     * Stock list view with category grouping and low-stock alerts
+     * Stock list view with search and pagination
      */
     public function index()
     {
-        $items = $this->stock_model->get_all();
+        $search = $this->input->get('search') ?? '';
+        $per_page = (int) ($this->input->get('per_page') ?? 10);
+        $page = (int) ($this->input->get('page') ?? 1);
+        $page = max(1, $page);
+        $offset = ($page - 1) * $per_page;
         
-        // Group by category for display
+        $filters = [];
+        if (!empty($search)) {
+            $filters['search'] = $search;
+        }
+        
+        $result = $this->stock_model->get_all_paginated($filters, $per_page, $offset);
+        $items = $result['rows'];
+        $total_rows = $result['total'];
+        $total_pages = ceil($total_rows / $per_page);
+        
         $grouped = [];
         foreach ($items as $item) {
             $category_name = $item['category_name'] ?? 'Tanpa Kategori';
@@ -33,10 +46,18 @@ class Stock extends CI_Controller
         
         $data = [
             'page' => 'Stock Management',
-            'grouped_items' => $grouped
+            'items' => $items,
+            'grouped_items' => $grouped,
+            'search' => $search,
+            'per_page' => $per_page,
+            'current_page' => $page,
+            'total_pages' => $total_pages,
+            'total_rows' => $total_rows,
+            'start_row' => $offset + 1,
+            'end_row' => min($offset + $per_page, $total_rows)
         ];
         
-        $this->template->load('layout/template', 'stock/index', $data);
+        $this->template->loadmodern('stock/index-modern', $data);
     }
 
     /**
@@ -49,7 +70,7 @@ class Stock extends CI_Controller
             'categories' => $this->category_model->get_all()
         ];
         
-        $this->template->load('layout/template', 'stock/form', $data);
+        $this->template->loadmodern('stock/form-modern', $data);
     }
 
     /**
@@ -103,7 +124,7 @@ class Stock extends CI_Controller
             'categories' => $this->category_model->get_all()
         ];
         
-        $this->template->load('layout/template', 'stock/form', $data);
+        $this->template->loadmodern('stock/form-modern', $data);
     }
 
     /**

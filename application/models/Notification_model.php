@@ -174,4 +174,32 @@ class Notification_model extends CI_Model
             ->where('is_read', 0)
             ->count_all_results();
     }
+
+    public function mark_all_read($user_id)
+    {
+        $user_id = (int) $user_id;
+        if ($user_id <= 0) {
+            return [
+                'success' => false,
+                'message' => 'User tidak valid.'
+            ];
+        }
+
+        $this->db->update(
+            'notification',
+            [
+                'is_read' => 1,
+                'read_at' => date('Y-m-d H:i:s')
+            ],
+            [
+                'user_id' => $user_id,
+                'is_read' => 0
+            ]
+        );
+
+        return [
+            'success' => true,
+            'message' => 'Semua notifikasi ditandai dibaca.'
+        ];
+    }
 }

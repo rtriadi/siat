@@ -23,10 +23,129 @@ class User extends CI_Controller
         }
     }
 
+    public function index()
+    {
+        $this->lists();
+    }
+
+    public function lists()
+    {
+        $search = $this->input->get('search') ?? '';
+        $per_page = (int) ($this->input->get('per_page') ?? 10);
+        $page = (int) ($this->input->get('page') ?? 1);
+        $page = max(1, $page);
+        $offset = ($page - 1) * $per_page;
+        
+        $filters = [];
+        if (!empty($search)) {
+            $filters['search'] = $search;
+        }
+        
+        $result = $this->user_model->get_all_users_paginated($filters, $per_page, $offset);
+        
+        $data = [
+            'page' => 'Kelola Pengguna',
+            'users' => $result['rows'],
+            'search' => $search,
+            'per_page' => $per_page,
+            'current_page' => $page,
+            'total_pages' => ceil($result['total'] / $per_page),
+            'total_rows' => $result['total'],
+            'start_row' => $offset + 1,
+            'end_row' => min($offset + $per_page, $result['total'])
+        ];
+        
+        $this->template->loadmodern('user/index-modern', $data);
+    }
+
+    public function create()
+    {
+        $data['page'] = 'Tambah Pengguna';
+        $this->template->loadmodern('user/create-modern', $data);
+    }
+
+    public function store()
+    {
+        $this->load->library('form_validation');
+
+        $this->form_validation->set_rules('username', 'Username', 'required|trim|min_length[3]|max_length[50]|is_unique[user.username]');
+        $this->form_validation->set_rules('password', 'Password', 'required|trim|min_length[4]|max_length[100]');
+        $this->form_validation->set_rules('nama', 'Nama', 'required|trim|max_length[100]');
+        $this->form_validation->set_rules('nip', 'NIP', 'trim|max_length[20]');
+        $this->form_validation->set_rules('unit', 'Unit', 'trim|max_length[100]');
+        $this->form_validation->set_rules('level', 'Role', 'required|integer');
+
+        if ($this->form_validation->run() === false) {
+            $this->session->set_flashdata('error', validation_errors());
+            redirect('user/create');
+        }
+
+        $username = trim($this->input->post('username', true));
+        $password = $this->input->post('password', true);
+        $nama = trim($this->input->post('nama', true));
+        $nip = trim($this->input->post('nip', true));
+        $unit = trim($this->input->post('unit', true));
+        $level = (int) $this->input->post('level', true);
+
+        $data = [
+            'username' => $username,
+            'password' => password_hash($password, PASSWORD_DEFAULT),
+            'nama' => $nama,
+            'nip' => !empty($nip) ? $nip : null,
+            'unit' => !empty($unit) ? $unit : null,
+            'level' => $level,
+            'is_active' => 1,
+            'created_at' => date('Y-m-d H:i:s')
+        ];
+
+        $result = $this->user_model->create_user($data);
+
+        if ($result['success']) {
+            $this->session->set_flashdata('success', 'Pengguna berhasil ditambahkan.');
+        } else {
+            $this->session->set_flashdata('error', $result['message']);
+        }
+
+        redirect('user/lists');
+    }
+
+    public function activate($id_user)
+    {
+        $result = $this->user_model->set_active($id_user, 1);
+        
+        if ($result['success']) {
+            $this->session->set_flashdata('success', 'Pengguna berhasil diaktifkan.');
+        } else {
+            $this->session->set_flashdata('error', $result['message']);
+        }
+        
+        redirect('user/lists');
+    }
+
+    public function deactivate($id_user)
+    {
+        $current_user = (int) $this->session->userdata('id_user');
+        
+        if ($id_user === $current_user) {
+            $this->session->set_flashdata('error', 'Tidak dapat menonaktifkan akun sendiri.');
+            redirect('user/lists');
+        }
+        
+        $result = $this->user_model->set_active($id_user, 0);
+        
+        if ($result['success']) {
+            $this->session->set_flashdata('success', 'Pengguna berhasil dinonaktifkan.');
+        } else {
+            $this->session->set_flashdata('error', $result['message']);
+        }
+        
+        redirect('user/lists');
+    }
+
     public function import()
     {
         $data['page'] = 'Import Pegawai';
-        $this->template->load('layout/template', 'user/import_form', $data);
+        $this->template->loadmodern('user/import_form-modern', $data);
     }
 
     public function import_preview()
@@ -147,7 +266,7 @@ class User extends CI_Controller
             'valid_count' => count($valid_rows),
         ];
 
-        $this->template->load('layout/template', 'user/import_preview', $data);
+        $this->template->loadmodern('user/import_preview-modern', $data);
     }
 
     public function import_commit()

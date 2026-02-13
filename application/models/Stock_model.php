@@ -51,10 +51,74 @@ class Stock_model extends CI_Model
         );
     }
     /**
-     * Get all items with category join
-     * @param array $filters Optional filters (category_id, low_stock_only)
-     * @return array
+     * Get next item code (BRG-0001 to BRG-9999)
+     * @return string
      */
+    public function get_next_item_code()
+    {
+        $this->db->select('item_code');
+        $this->db->from('stock_item');
+        $this->db->like('item_code', 'BRG-', 'after');
+        $this->db->order_by('item_code', 'DESC');
+        $this->db->limit(1);
+        
+        $result = $this->db->get()->row_array();
+        
+        if ($result && !empty($result['item_code'])) {
+            $last_num = (int) str_replace('BRG-', '', $result['item_code']);
+            if ($last_num < 9999) {
+                return 'BRG-' . str_pad($last_num + 1, 4, '0', STR_PAD_LEFT);
+            }
+        }
+        
+        return 'BRG-0001';
+    }
+
+    /**
+     * Create new item with auto-generated item code
+     * @param array $data (category_id, item_name, available_qty, low_stock_threshold)
+     * @return array ['success' => bool, 'id' => int|null, 'message' => string]
+     */
+    public function create_item($data)
+    {
+        // Validate required fields
+        if (empty($data['category_id']) || empty($data['item_name'])) {
+            return [
+                'success' => false,
+                'id' => null,
+                'message' => 'Kategori dan nama item wajib diisi.'
+            ];
+        }
+
+        $item_code = $this->get_next_item_code();
+
+        // Treat identifiers as strings to prevent numeric coercion
+        $payload = [
+            'item_code' => $item_code,
+            'category_id' => (string)$data['category_id'],
+            'item_name' => $data['item_name'],
+            'available_qty' => isset($data['available_qty']) ? max(0, (int)$data['available_qty']) : 0,
+            'reserved_qty' => 0,
+            'used_qty' => 0,
+            'low_stock_threshold' => isset($data['low_stock_threshold']) ? max(0, (int)$data['low_stock_threshold']) : 10
+        ];
+
+        if ($this->db->insert('stock_item', $payload)) {
+            return [
+                'success' => true,
+                'id' => $this->db->insert_id(),
+                'message' => 'Item berhasil dibuat dengan kode ' . $item_code
+            ];
+        }
+
+        $error = $this->db->error();
+        return [
+            'success' => false,
+            'id' => null,
+            'message' => $error['message'] ?? 'Gagal membuat item.'
+        ];
+    }
+
     public function get_all($filters = [])
     {
         $this->db
@@ -70,11 +134,58 @@ class Stock_model extends CI_Model
             $this->db->where('stock_item.available_qty <= stock_item.low_stock_threshold');
         }
 
-        return $this->db
-            ->order_by('stock_category.category_name', 'ASC')
-            ->order_by('stock_item.item_name', 'ASC')
-            ->get()
-            ->result_array();
+        if (!empty($filters['search'])) {
+            $search = $filters['search'];
+            $this->db->group_start();
+            $this->db->like('stock_item.item_name', $search);
+            $this->db->or_like('stock_category.category_name', $search);
+            $this->db->group_end();
+        }
+
+        if (!empty($filters['order_by'])) {
+            $this->db->order_by($filters['order_by']);
+        } else {
+            $this->db->order_by('stock_category.category_name', 'ASC');
+            $this->db->order_by('stock_item.item_name', 'ASC');
+        }
+
+        return $this->db->get()->result_array();
+    }
+
+    public function get_all_paginated($filters = [], $per_page = 10, $offset = 0)
+    {
+        $this->db
+            ->select('stock_item.*, stock_category.category_name')
+            ->from('stock_item')
+            ->join('stock_category', 'stock_category.id_category = stock_item.category_id', 'left');
+
+        if (isset($filters['category_id'])) {
+            $this->db->where('stock_item.category_id', $filters['category_id']);
+        }
+
+        if (isset($filters['low_stock_only']) && $filters['low_stock_only']) {
+            $this->db->where('stock_item.available_qty <= stock_item.low_stock_threshold');
+        }
+
+        if (!empty($filters['search'])) {
+            $search = $filters['search'];
+            $this->db->group_start();
+            $this->db->like('stock_item.item_name', $search);
+            $this->db->or_like('stock_category.category_name', $search);
+            $this->db->group_end();
+        }
+
+        $this->db->order_by('stock_category.category_name', 'ASC');
+        $this->db->order_by('stock_item.item_name', 'ASC');
+        
+        $total = $this->db->count_all_results('', false);
+        
+        $result = $this->db->limit($per_page, $offset)->get()->result_array();
+        
+        return [
+            'rows' => $result,
+            'total' => $total
+        ];
     }
 
     /**
@@ -91,48 +202,6 @@ class Stock_model extends CI_Model
             ->where('stock_item.id_item', $id_item)
             ->get()
             ->row_array();
-    }
-
-    /**
-     * Create new stock item
-     * @param array $data (category_id, item_name, available_qty, low_stock_threshold)
-     * @return array ['success' => bool, 'id' => int|null, 'message' => string]
-     */
-    public function create_item($data)
-    {
-        // Validate required fields
-        if (empty($data['category_id']) || empty($data['item_name'])) {
-            return [
-                'success' => false,
-                'id' => null,
-                'message' => 'Kategori dan nama item wajib diisi.'
-            ];
-        }
-
-        // Treat identifiers as strings to prevent numeric coercion
-        $payload = [
-            'category_id' => (string)$data['category_id'],
-            'item_name' => $data['item_name'],
-            'available_qty' => isset($data['available_qty']) ? max(0, (int)$data['available_qty']) : 0,
-            'reserved_qty' => 0,
-            'used_qty' => 0,
-            'low_stock_threshold' => isset($data['low_stock_threshold']) ? max(0, (int)$data['low_stock_threshold']) : 10
-        ];
-
-        if ($this->db->insert('stock_item', $payload)) {
-            return [
-                'success' => true,
-                'id' => $this->db->insert_id(),
-                'message' => 'Item berhasil dibuat.'
-            ];
-        }
-
-        $error = $this->db->error();
-        return [
-            'success' => false,
-            'id' => null,
-            'message' => $error['message'] ?? 'Gagal membuat item.'
-        ];
     }
 
     /**

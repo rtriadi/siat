@@ -16,9 +16,13 @@ class Request_admin extends CI_Controller
     public function index()
     {
         $status = $this->input->get('status');
+        $search = $this->input->get('search');
         $filters = [];
         if (!empty($status) && $status !== 'all') {
             $filters['status'] = $status;
+        }
+        if (!empty($search)) {
+            $filters['search'] = $search;
         }
 
         $requests = $this->Request_model->get_all($filters);
@@ -47,10 +51,92 @@ class Request_admin extends CI_Controller
             'page' => 'Request Management',
             'requests' => $requests,
             'user_map' => $user_map,
-            'selected_status' => $status ?: 'all'
+            'selected_status' => $status ?: 'all',
+            'search' => $search ?? ''
         ];
 
-        $this->template->load('layout/template', 'request_admin/index', $data);
+        $this->template->loadmodern('request_admin/index-modern', $data);
+    }
+
+    public function create()
+    {
+        $this->load->model('Stock_model');
+        
+        $employees = $this->db
+            ->select('id_user, nama, nip, unit')
+            ->from('user')
+            ->where('level', 2)
+            ->where('is_active', 1)
+            ->order_by('nama', 'ASC')
+            ->get()
+            ->result_array();
+
+        $items = $this->Stock_model->get_all();
+        $available_items = [];
+        foreach ($items as $item) {
+            if ((int) $item['available_qty'] > 0) {
+                $available_items[] = $item;
+            }
+        }
+
+        $data = [
+            'page' => 'Buat Permintaan',
+            'employees' => $employees,
+            'items' => $available_items
+        ];
+
+        $this->template->loadmodern('request_admin/create-modern', $data);
+    }
+
+    public function store()
+    {
+        $this->load->model('Stock_model');
+        
+        $user_id = (int) $this->input->post('user_id');
+        
+        if (!$user_id) {
+            $this->session->set_flashdata('error', 'Pilih karyawan terlebih dahulu.');
+            redirect('request_admin/create');
+        }
+
+        $employee = $this->db->get_where('user', ['id_user' => $user_id, 'level' => 2])->row_array();
+        if (!$employee) {
+            $this->session->set_flashdata('error', 'Karyawan tidak ditemukan.');
+            redirect('request_admin/create');
+        }
+
+        $qtys = $this->input->post('qty_requested');
+        if (!is_array($qtys)) {
+            $qtys = [];
+        }
+
+        $items = [];
+        foreach ($qtys as $item_id => $qty) {
+            $qty = (int) $qty;
+            if ($qty > 0) {
+                $items[] = [
+                    'item_id' => (int) $item_id,
+                    'qty_requested' => $qty
+                ];
+            }
+        }
+
+        if (empty($items)) {
+            $this->session->set_flashdata('error', 'Pilih minimal 1 item.');
+            redirect('request_admin/create');
+        }
+
+        $note = $this->input->post('note', true);
+        
+        $result = $this->Request_model->create_request($user_id, $items, $note);
+
+        if ($result['success']) {
+            $this->session->set_flashdata('success', 'Permintaan berhasil dibuat untuk ' . htmlspecialchars($employee['nama']));
+            redirect('request_admin');
+        }
+
+        $this->session->set_flashdata('error', $result['message']);
+        redirect('request_admin/create');
     }
 
     public function detail($id)
@@ -73,7 +159,7 @@ class Request_admin extends CI_Controller
             'pegawai' => $pegawai
         ];
 
-        $this->template->load('layout/template', 'request_admin/detail', $data);
+        $this->template->loadmodern('request_admin/detail-modern', $data);
     }
 
     public function approve($id)
@@ -137,7 +223,7 @@ class Request_admin extends CI_Controller
             'request' => $detail
         ];
 
-        $this->template->load('layout/template', 'request_admin/approve_form', $data);
+        $this->template->loadmodern('request_admin/approve_form-modern', $data);
     }
 
     public function reject($id)
@@ -227,6 +313,6 @@ class Request_admin extends CI_Controller
             'request' => $detail
         ];
 
-        $this->template->load('layout/template', 'request_admin/deliver_form', $data);
+        $this->template->loadmodern('request_admin/deliver_form-modern', $data);
     }
 }

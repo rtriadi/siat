@@ -9,6 +9,8 @@ class Auth extends CI_Controller
         parent::__construct();
         // check_already_login();
         $this->load->model('user_model');
+        $this->load->library('session');
+        $this->load->database();
     }
 
     public function login()
@@ -49,6 +51,7 @@ class Auth extends CI_Controller
                     $this->session->set_userdata(array(
                         'id_user' => $user['id_user'],
                         'username' => $user['username'],
+                        'nama' => $user['nama'],
                         'level' => $user['level'],
                         'must_change_password' => $user['must_change_password'],
                     ));
@@ -74,13 +77,13 @@ class Auth extends CI_Controller
                     $this->session->set_userdata(array(
                         'id_user' => $user['id_user'],
                         'username' => $user['username'],
+                        'nama' => $user['nama'],
                         'level' => $user['level'],
                         'must_change_password' => $user['must_change_password'],
                     ));
                     $this->user_model->update_login_meta($user['id_user'], date('Y-m-d H:i:s'));
                     if ((int) $user['level'] === 2 && (int) $user['must_change_password'] === 1) {
-                        $this->session->set_flashdata('warning', 'Password Anda masih default. Silakan ubah terlebih dahulu.');
-                        redirect('auth/change_password');
+                        $this->session->set_flashdata('warning', 'Password Anda masih default. Silakan ubah melalui menu ubah password.');
                     }
                     $this->redirect_by_level($user['level']);
                 } else {
@@ -90,13 +93,12 @@ class Auth extends CI_Controller
                 }
             }
         }
-        $this->load->view('login');
+        $this->load->view('login-modern');
     }
 
     public function change_password()
     {
         check_not_login();
-        check_pegawai();
         $this->load->library('form_validation');
 
         if ($this->input->post()) {
@@ -129,11 +131,11 @@ class Auth extends CI_Controller
             $this->user_model->set_must_change_password($id_user, 0);
             $this->session->set_userdata('must_change_password', 0);
             $this->session->set_flashdata('success', 'Password berhasil diperbarui.');
-            redirect('pegawai');
+            redirect('dashboard');
         }
 
         $data['page'] = 'Ubah Password';
-        $this->template->load('layout/template', 'user/change_password', $data);
+        $this->template->loadmodern('user/change_password-modern', $data);
     }
 
     public function logout()

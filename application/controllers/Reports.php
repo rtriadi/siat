@@ -51,7 +51,7 @@ class Reports extends CI_Controller
             'filters' => $filters
         ];
 
-        $this->template->load('layout/template', 'reports/request_history', $data);
+        $this->template->loadmodern('reports/request_history-modern', $data);
     }
 
     public function export_request_history()
@@ -152,7 +152,7 @@ class Reports extends CI_Controller
             'filters' => $filters
         ];
 
-        $this->template->load('layout/template', 'reports/stock_movement', $data);
+        $this->template->loadmodern('reports/stock_movement-modern', $data);
     }
 
     public function audit_trail()
@@ -185,7 +185,7 @@ class Reports extends CI_Controller
             'filters' => $filters
         ];
 
-        $this->template->load('layout/template', 'reports/audit_trail', $data);
+        $this->template->loadmodern('reports/audit_trail-modern', $data);
     }
 
     public function export_stock_movement()
@@ -275,7 +275,7 @@ class Reports extends CI_Controller
             'filters' => $filters
         ];
 
-        $this->template->load('layout/template', 'reports/stock_levels', $data);
+        $this->template->loadmodern('reports/stock_levels-modern', $data);
     }
 
     public function export_stock_levels()

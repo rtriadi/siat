@@ -17,6 +17,49 @@ class Category_model extends CI_Model
     }
 
     /**
+     * Get categories with pagination and search
+     * @param int $limit
+     * @param int $offset
+     * @param string $search
+     * @return array
+     */
+    public function get_paginated($limit, $offset = 0, $search = '')
+    {
+        $this->db->from('stock_category');
+        
+        if (!empty($search)) {
+            $this->db->group_start();
+            $this->db->like('category_name', $search);
+            $this->db->or_like('description', $search);
+            $this->db->group_end();
+        }
+        
+        $this->db->order_by('category_name', 'ASC');
+        $this->db->limit($limit, $offset);
+        
+        return $this->db->get()->result_array();
+    }
+
+    /**
+     * Count total categories with optional search
+     * @param string $search
+     * @return int
+     */
+    public function count_all($search = '')
+    {
+        $this->db->from('stock_category');
+        
+        if (!empty($search)) {
+            $this->db->group_start();
+            $this->db->like('category_name', $search);
+            $this->db->or_like('description', $search);
+            $this->db->group_end();
+        }
+        
+        return $this->db->count_all_results();
+    }
+
+    /**
      * Get category by ID
      * @param int $id_category
      * @return array|null

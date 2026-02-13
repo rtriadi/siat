@@ -24,17 +24,23 @@ class Stock_import extends CI_Controller
         }
     }
 
+    public function index()
+    {
+        redirect('stock_import/import');
+    }
+
     public function import()
     {
         $data['page'] = 'Import Stok';
-        $this->template->load('layout/template', 'stock/import_form', $data);
+        $data['categories'] = $this->category_model->get_all();
+        $this->template->loadmodern('stock/import_form-modern', $data);
     }
 
     public function import_preview()
     {
         $this->load->library('upload', $this->upload_config());
 
-        if (! $this->upload->do_upload('import_file')) {
+        if (!$this->upload->do_upload('import_file')) {
             $this->session->set_flashdata('error', $this->upload->display_errors('', ''));
             redirect('stock_import/import');
         }
@@ -61,104 +67,85 @@ class Stock_import extends CI_Controller
         $worksheet = $spreadsheet->getActiveSheet();
         $rows = $worksheet->toArray(null, true, true, true);
 
-        // Build lookup maps for validation
-        $category_map = $this->build_category_map();
-        $item_map = $this->build_item_map();
+        if (empty($rows)) {
+            $this->session->set_flashdata('error', 'File Excel kosong.');
+            redirect('stock_import/import');
+        }
+
+        return $this->process_import($rows);
+    }
+
+    private function process_import($rows)
+    {
+        $categories = $this->category_model->get_all();
+        $category_map = [];
+        foreach ($categories as $cat) {
+            $category_map[strtolower($cat['category_name'])] = $cat['id_category'];
+        }
+
+        $items = $this->stock_model->get_all();
+        $item_map = [];
+        foreach ($items as $item) {
+            $key = $item['category_id'] . '|' . strtolower($item['item_name']);
+            $item_map[$key] = $item;
+        }
 
         $preview_rows = [];
         $errors = [];
-        $row_number = 0;
 
         foreach ($rows as $index => $row) {
             if ($index === 1) {
-                continue; // Skip header row
+                continue;
             }
 
-            $row_number = $index;
-            $item_id = trim((string) ($row['A'] ?? ''));
-            $category_name = trim((string) ($row['B'] ?? ''));
-            $item_name = trim((string) ($row['C'] ?? ''));
-            $qty = trim((string) ($row['D'] ?? ''));
-            $note = trim((string) ($row['E'] ?? ''));
+            $category_name = trim((string) ($row['A'] ?? ''));
+            $item_name = trim((string) ($row['B'] ?? ''));
+            $qty = trim((string) ($row['C'] ?? ''));
+            $satuan = trim((string) ($row['D'] ?? ''));
+            $min_stock = trim((string) ($row['E'] ?? ''));
 
-            // Skip completely empty rows
-            if ($item_id === '' && $category_name === '' && $item_name === '' && $qty === '') {
+            $row_str = implode(' ', array_map('strval', $row));
+            if (trim($row_str) === '') {
                 continue;
             }
 
             $row_errors = [];
 
-            // Validate quantity
-            if ($qty === '') {
-                $row_errors[] = 'Qty wajib diisi.';
-            } elseif (!is_numeric($qty) || (int)$qty <= 0) {
-                $row_errors[] = 'Qty harus angka positif.';
-            }
-
-            // Match item: prefer ID, fallback to category+name
-            $matched_item_id = null;
-
-            if ($item_id !== '') {
-                // Try to match by ID
-                if (isset($item_map['by_id'][$item_id])) {
-                    $matched_item_id = $item_map['by_id'][$item_id]['id_item'];
-                } else {
-                    $row_errors[] = 'Item ID tidak ditemukan.';
-                }
+            if ($category_name === '') {
+                $row_errors[] = 'Kategori wajib diisi.';
             } else {
-                // Fallback: match by category+name
-                if ($category_name === '') {
-                    $row_errors[] = 'Kategori wajib diisi jika Item ID kosong.';
-                } elseif ($item_name === '') {
-                    $row_errors[] = 'Nama Item wajib diisi jika Item ID kosong.';
-                } else {
-                    // Find category
-                    $category_id = null;
-                    foreach ($category_map as $cat) {
-                        if (strcasecmp($cat['category_name'], $category_name) === 0) {
-                            $category_id = $cat['id_category'];
-                            break;
-                        }
-                    }
-
-                    if ($category_id === null) {
-                        $row_errors[] = 'Kategori tidak ditemukan.';
-                    } else {
-                        // Find item by category+name
-                        $lookup_key = $category_id . '|' . strtolower($item_name);
-                        if (isset($item_map['by_category_name'][$lookup_key])) {
-                            $matched_item_id = $item_map['by_category_name'][$lookup_key]['id_item'];
-                        } else {
-                            $row_errors[] = 'Item tidak ditemukan dalam kategori tersebut.';
-                        }
-                    }
+                $category_id = $category_map[strtolower($category_name)] ?? null;
+                if ($category_id === null) {
+                    $row_errors[] = 'Kategori tidak ditemukan.';
                 }
             }
+
+            if ($item_name === '') {
+                $row_errors[] = 'Nama barang wajib diisi.';
+            }
+
+            if ($qty === '') {
+                $row_errors[] = 'Jumlah wajib diisi.';
+            } elseif (!is_numeric($qty) || (int)$qty < 0) {
+                $row_errors[] = 'Jumlah harus angka positif.';
+            }
+
+            $category_id = $category_map[strtolower($category_name)] ?? null;
+            $item_key = $category_id . '|' . strtolower($item_name);
+            $existing_item = $item_map[$item_key] ?? null;
+            $action = $existing_item ? 'update' : 'create';
 
             $preview_rows[] = [
-                'row' => $row_number,
-                'item_id' => $item_id,
-                'category' => $category_name,
+                'row' => $index,
+                'category_name' => $category_name,
                 'item_name' => $item_name,
-                'qty' => $qty,
-                'note' => $note,
-                'matched_item_id' => $matched_item_id,
-                'errors' => $row_errors,
-            ];
-        }
-
-        // Collect valid rows for session storage
-        $valid_rows = [];
-        foreach ($preview_rows as $preview_row) {
-            if (!empty($preview_row['errors'])) {
-                $errors[] = 'Baris ' . $preview_row['row'] . ': ' . implode(' ', $preview_row['errors']);
-                continue;
-            }
-
-            $valid_rows[] = [
-                'id_item' => $preview_row['matched_item_id'],
-                'qty_delta' => (int)$preview_row['qty'],
-                'reason' => !empty($preview_row['note']) ? $preview_row['note'] : 'Import restock',
+                'qty' => (int) $qty,
+                'satuan' => !empty($satuan) ? $satuan : 'Pcs',
+                'min_stock' => !empty($min_stock) ? (int) $min_stock : 10,
+                'category_id' => $category_id,
+                'existing_item' => $existing_item,
+                'action' => $action,
+                'errors' => $row_errors
             ];
         }
 
@@ -167,16 +154,32 @@ class Stock_import extends CI_Controller
             redirect('stock_import/import');
         }
 
-        $this->session->set_userdata(self::IMPORT_SESSION_KEY, $valid_rows);
+        $valid_count = 0;
+        $create_count = 0;
+        $update_count = 0;
+        foreach ($preview_rows as $r) {
+            if (empty($r['errors'])) {
+                $valid_count++;
+                if ($r['action'] === 'create') {
+                    $create_count++;
+                } else {
+                    $update_count++;
+                }
+            }
+        }
+
+        $this->session->set_userdata(self::IMPORT_SESSION_KEY, $preview_rows);
 
         $data = [
-            'page' => 'Preview Import Stok',
+            'page' => 'Preview Import',
             'rows' => $preview_rows,
             'errors' => $errors,
-            'valid_count' => count($valid_rows),
+            'valid_count' => $valid_count,
+            'create_count' => $create_count,
+            'update_count' => $update_count
         ];
 
-        $this->template->load('layout/template', 'stock/import_preview', $data);
+        $this->template->loadmodern('stock/import_preview-modern', $data);
     }
 
     public function import_commit()
@@ -188,16 +191,64 @@ class Stock_import extends CI_Controller
             redirect('stock_import/import');
         }
 
-        $user_id = $this->session->userdata('id_user');
-        $result = $this->stock_model->restock_batch($rows, $user_id);
+        $success_count = 0;
+        $error_count = 0;
+        $created_count = 0;
+        $updated_count = 0;
+        $error_messages = [];
 
-        if (!$result['success']) {
-            $this->session->set_flashdata('error', 'Gagal import: ' . $result['message']);
-            redirect('stock_import/import');
+        foreach ($rows as $row) {
+            if (!empty($row['errors'])) {
+                $error_count++;
+                continue;
+            }
+
+            if ($row['action'] === 'create') {
+                $result = $this->stock_model->create_item([
+                    'category_id' => $row['category_id'],
+                    'item_name' => $row['item_name'],
+                    'available_qty' => $row['qty'],
+                    'low_stock_threshold' => $row['min_stock']
+                ]);
+
+                if ($result['success']) {
+                    $success_count++;
+                    $created_count++;
+                } else {
+                    $error_count++;
+                    $error_messages[] = $row['item_name'] . ': ' . $result['message'];
+                }
+            } else {
+                $item = $row['existing_item'];
+                $user_id = $this->session->userdata('id_user');
+                
+                $result = $this->stock_model->adjust_stock($item['id_item'], 'in', $row['qty'], 'Import stok', $user_id);
+
+                if ($result['success']) {
+                    $success_count++;
+                    $updated_count++;
+                } else {
+                    $error_count++;
+                    $error_messages[] = $row['item_name'] . ': ' . $result['message'];
+                }
+            }
         }
 
         $this->session->unset_userdata(self::IMPORT_SESSION_KEY);
-        $this->session->set_flashdata('success', 'Import berhasil. Total: ' . $result['updated'] . ' item.');
+        
+        $msg = "Import selesai! ";
+        if ($created_count > 0) {
+            $msg .= "$created_count barang baru dibuat. ";
+        }
+        if ($updated_count > 0) {
+            $msg .= "$updated_count stok diperbarui. ";
+        }
+        $this->session->set_flashdata('success', $msg);
+        
+        if ($error_count > 0) {
+            $this->session->set_flashdata('error', "$error_count gagal. " . implode(', ', array_slice($error_messages, 0, 3)));
+        }
+        
         redirect('stock_import/import');
     }
 
@@ -205,17 +256,30 @@ class Stock_import extends CI_Controller
     {
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
-        $sheet->setTitle('Template Restock');
+        $sheet->setTitle('Template Import');
 
-        $sheet->setCellValue('A1', 'Item ID');
-        $sheet->setCellValue('B1', 'Category');
-        $sheet->setCellValue('C1', 'Item Name');
-        $sheet->setCellValue('D1', 'Qty');
-        $sheet->setCellValue('E1', 'Note');
+        $categories = $this->category_model->get_all();
+        $cat_list = [];
+        foreach ($categories as $c) {
+            $cat_list[] = $c['category_name'];
+        }
+        $cat_reference = implode(', ', $cat_list);
+
+        $sheet->setCellValue('A1', 'Kategori');
+        $sheet->setCellValue('B1', 'Nama Barang');
+        $sheet->setCellValue('C1', 'Jumlah');
+        $sheet->setCellValue('D1', 'Satuan');
+        $sheet->setCellValue('E1', 'Stok Minimum');
+
+        $sheet->setCellValue('A2', $cat_reference);
+        $sheet->setCellValue('B2', 'Kertas A4');
+        $sheet->setCellValue('C2', '100');
+        $sheet->setCellValue('D2', 'Pcs');
+        $sheet->setCellValue('E2', '10');
 
         $writer = new XlsxWriter($spreadsheet);
 
-        $filename = 'template_import_restock.xlsx';
+        $filename = 'template_import_stok.xlsx';
 
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment;filename="' . $filename . '"');
@@ -235,33 +299,28 @@ class Stock_import extends CI_Controller
         return [
             'upload_path' => $upload_path,
             'allowed_types' => 'xlsx|xls',
-            'max_size' => 2048,
+            'max_size' => 5120,
             'encrypt_name' => true,
         ];
     }
 
-    private function build_category_map(): array
+    public function import_items()
     {
-        return $this->category_model->get_all();
+        redirect('stock_import/import');
     }
 
-    private function build_item_map(): array
+    public function import_items_preview()
     {
-        $items = $this->stock_model->get_all();
-        $map = [
-            'by_id' => [],
-            'by_category_name' => [],
-        ];
+        redirect('stock_import/import');
+    }
 
-        foreach ($items as $item) {
-            // Map by ID
-            $map['by_id'][(string)$item['id_item']] = $item;
+    public function import_items_commit()
+    {
+        redirect('stock_import/import');
+    }
 
-            // Map by category_id + item_name (case-insensitive)
-            $key = $item['category_id'] . '|' . strtolower($item['item_name']);
-            $map['by_category_name'][$key] = $item;
-        }
-
-        return $map;
+    public function download_items_template()
+    {
+        redirect('stock_import/download_template');
     }
 }

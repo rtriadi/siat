@@ -28,7 +28,7 @@ class Notification extends CI_Controller
             'notifications' => $this->Notification_model->get_by_user($user_id, 50)
         ];
 
-        $this->template->load('layout/template', 'notification/index', $data);
+        $this->template->loadmodern('notification/index-modern', $data);
     }
 
     public function mark_read($id)
@@ -42,6 +42,25 @@ class Notification extends CI_Controller
         }
 
         $result = $this->Notification_model->mark_read($id_notification, $user_id);
+        if ($result['success']) {
+            $this->session->set_flashdata('success', $result['message']);
+        } else {
+            $this->session->set_flashdata('error', $result['message']);
+        }
+
+        redirect('notification');
+    }
+
+    public function mark_all_read()
+    {
+        $user_id = (int) $this->session->userdata('id_user');
+
+        if ($user_id <= 0) {
+            $this->session->set_flashdata('error', 'Akun tidak valid.');
+            redirect('notification');
+        }
+
+        $result = $this->Notification_model->mark_all_read($user_id);
         if ($result['success']) {
             $this->session->set_flashdata('success', $result['message']);
         } else {

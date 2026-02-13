@@ -16,25 +16,17 @@ class Request extends CI_Controller
 
     public function index()
     {
-        if ((int) $this->session->userdata('must_change_password') === 1) {
-            $this->session->set_flashdata('warning', 'Password Anda masih default. Silakan ubah terlebih dahulu.');
-            redirect('auth/change_password');
-        }
         $user_id = $this->session->userdata('id_user');
         $data = [
             'page' => 'Permintaan ATK',
             'requests' => $this->Request_model->get_by_user($user_id)
         ];
 
-        $this->template->load('layout/template', 'request/index', $data);
+        $this->template->loadmodern('request/index-modern', $data);
     }
 
     public function create()
     {
-        if ((int) $this->session->userdata('must_change_password') === 1) {
-            $this->session->set_flashdata('warning', 'Password Anda masih default. Silakan ubah terlebih dahulu.');
-            redirect('auth/change_password');
-        }
         $items = $this->Stock_model->get_all();
         $available_items = [];
         foreach ($items as $item) {
@@ -50,15 +42,11 @@ class Request extends CI_Controller
             'old_note' => $this->session->flashdata('old_note') ?? ''
         ];
 
-        $this->template->load('layout/template', 'request/form', $data);
+        $this->template->loadmodern('request/form-modern', $data);
     }
 
     public function store()
     {
-        if ((int) $this->session->userdata('must_change_password') === 1) {
-            $this->session->set_flashdata('warning', 'Password Anda masih default. Silakan ubah terlebih dahulu.');
-            redirect('auth/change_password');
-        }
         $qtys = $this->input->post('qty_requested');
         if (!is_array($qtys)) {
             $qtys = [];
@@ -108,10 +96,6 @@ class Request extends CI_Controller
 
     public function detail($id_request)
     {
-        if ((int) $this->session->userdata('must_change_password') === 1) {
-            $this->session->set_flashdata('warning', 'Password Anda masih default. Silakan ubah terlebih dahulu.');
-            redirect('auth/change_password');
-        }
         $id_request = (int) $id_request;
         $request = $this->Request_model->get_detail($id_request);
 
@@ -131,15 +115,11 @@ class Request extends CI_Controller
             'request' => $request
         ];
 
-        $this->template->load('layout/template', 'request/detail', $data);
+        $this->template->loadmodern('request/detail-modern', $data);
     }
 
     public function cancel($id_request)
     {
-        if ((int) $this->session->userdata('must_change_password') === 1) {
-            $this->session->set_flashdata('warning', 'Password Anda masih default. Silakan ubah terlebih dahulu.');
-            redirect('auth/change_password');
-        }
         $id_request = (int) $id_request;
         $user_id = $this->session->userdata('id_user');
         $result = $this->Request_model->cancel_request($id_request, $user_id);
