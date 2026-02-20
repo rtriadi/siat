@@ -31,16 +31,21 @@
         </div>
         <div class="card-body">
             <form method="get" action="<?= site_url('reports/stock_movement') ?>" class="filter-form">
+                <?php 
+                    $session_year = $this->session->userdata('login_year') ?? date('Y');
+                    $min_date = $session_year . '-01-01'; 
+                    $max_date = $session_year . '-12-31'; 
+                ?>
                 <div class="filter-grid">
                     <div class="form-group">
                         <label for="date_start" class="form-label">Tanggal Mulai</label>
                         <input type="date" class="form-control" id="date_start" name="date_start" 
-                               value="<?= isset($filters['date_start']) ? $filters['date_start'] : '' ?>">
+                               value="<?= isset($filters['date_start']) ? $filters['date_start'] : '' ?>" min="<?= $min_date ?>" max="<?= $max_date ?>">
                     </div>
                     <div class="form-group">
                         <label for="date_end" class="form-label">Tanggal Selesai</label>
                         <input type="date" class="form-control" id="date_end" name="date_end" 
-                               value="<?= isset($filters['date_end']) ? $filters['date_end'] : '' ?>">
+                               value="<?= isset($filters['date_end']) ? $filters['date_end'] : '' ?>" min="<?= $min_date ?>" max="<?= $max_date ?>">
                     </div>
                     <div class="form-group">
                         <label for="category_id" class="form-label">Kategori</label>

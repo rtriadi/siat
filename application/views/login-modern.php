@@ -427,8 +427,8 @@
                     <div class="input-wrapper">
                         <select name="login_year" id="login_year" class="form-control" required style="appearance: none;">
                             <?php 
-                            $current_year = date('Y');
-                            for($y = $current_year; $y >= $current_year - 5; $y--): 
+                            $current_year = max(date('Y'), 2025);
+                            for($y = $current_year; $y >= 2025; $y--): 
                             ?>
                                 <option value="<?= $y ?>"><?= $y ?></option>
                             <?php endfor; ?>

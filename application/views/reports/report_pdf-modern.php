@@ -65,9 +65,12 @@
                     </div>
 
                     <!-- Print Date -->
+                    <?php 
+                        $default_print = (date('Y') == $session_year) ? date('Y-m-d') : $max_date;
+                    ?>
                     <div class="form-group">
                         <label class="form-label">Tanggal Cetak / TTD</label>
-                        <input type="date" name="print_date" class="form-control" value="<?= $print_date ?? date('Y-m-d') ?>" required>
+                        <input type="date" name="print_date" class="form-control" value="<?= $print_date ?? $default_print ?>" required min="<?= $min_date ?>" max="<?= $max_date ?>">
                     </div>
 
                     <!-- Paper Size -->
