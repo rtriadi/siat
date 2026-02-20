@@ -33,10 +33,12 @@ class Stock_import extends CI_Controller
     {
         $year = $this->session->userdata('login_year') ?? date('Y');
         $needs_rollover = !$this->stock_model->check_rollover_status($year);
+        $is_first_year = !$this->stock_model->needs_rollover($year);
 
         $data['page'] = 'Import Stok';
         $data['categories'] = $this->category_model->get_all();
         $data['needs_rollover'] = $needs_rollover;
+        $data['is_first_year'] = $is_first_year;
         $data['login_year'] = $year;
         
         $this->template->loadmodern('stock/import_form-modern', $data);
@@ -61,16 +63,23 @@ class Stock_import extends CI_Controller
     public function import_preview()
     {
         $year = $this->session->userdata('login_year') ?? date('Y');
+        $is_first_year = !$this->stock_model->needs_rollover($year);
+
         if (!$this->stock_model->check_rollover_status($year)) {
             $this->session->set_flashdata('error', 'Tidak dapat melakukan import sebelum data stok sisa tahun sebelumnya ditarik.');
             redirect('stock_import/import');
         }
 
-        $purchase_date = $this->input->post('purchase_date');
-        if (empty($purchase_date)) {
-            $this->session->set_flashdata('error', 'Tanggal Pembelian wajib diisi.');
-            redirect('stock_import/import');
+        if ($is_first_year) {
+            $purchase_date = $year . '-01-01'; // Default date for initial stock
+        } else {
+            $purchase_date = $this->input->post('purchase_date');
+            if (empty($purchase_date)) {
+                $this->session->set_flashdata('error', 'Tanggal Pembelian wajib diisi.');
+                redirect('stock_import/import');
+            }
         }
+        
         $this->session->set_userdata('import_purchase_date', $purchase_date);
 
         $this->load->library('upload', $this->upload_config());

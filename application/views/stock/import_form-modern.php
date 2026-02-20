@@ -81,6 +81,7 @@
                     $max_date = $session_year . '-12-31'; 
                     $default_date = (date('Y') == $session_year) ? date('Y-m-d') : $max_date;
                 ?>
+                <?php if (!isset($is_first_year) || !$is_first_year): ?>
                 <div class="form-group" style="margin-top: 20px; max-width: 320px;">
                     <label for="purchase_date" class="form-label">
                         Tanggal Pembelian <span style="color:#ef4444;">*</span>
@@ -89,6 +90,11 @@
                            value="<?= $default_date ?>" min="<?= $min_date ?>" max="<?= $max_date ?>" required>
                     <span class="input-info">Tanggal saat barang dibeli/diterima</span>
                 </div>
+                <?php else: ?>
+                <div class="alert alert-info" style="margin-top: 20px; background-color: #eff6ff; color: #1e3a8a; border: 1px solid #bfdbfe; padding: 12px 16px; border-radius: var(--radius);">
+                    <i class="fas fa-info-circle"></i> <strong>Mode Setup Awal:</strong> Anda tidak perlu memasukkan tanggal karena ini adalah setup stok awal sistem. Tanggal akan otomatis diset.
+                </div>
+                <?php endif; ?>
                 
                 <div class="form-actions">
                     <button type="submit" class="btn btn-primary" id="submitBtn" disabled>
