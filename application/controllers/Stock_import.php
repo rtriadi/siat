@@ -31,13 +31,41 @@ class Stock_import extends CI_Controller
 
     public function import()
     {
+        $year = $this->session->userdata('login_year') ?? date('Y');
+        $needs_rollover = !$this->stock_model->check_rollover_status($year);
+
         $data['page'] = 'Import Stok';
         $data['categories'] = $this->category_model->get_all();
+        $data['needs_rollover'] = $needs_rollover;
+        $data['login_year'] = $year;
+        
         $this->template->loadmodern('stock/import_form-modern', $data);
+    }
+
+    public function do_rollover()
+    {
+        $year = $this->session->userdata('login_year') ?? date('Y');
+        $admin_id = $this->session->userdata('id_user');
+        
+        $result = $this->stock_model->process_yearly_rollover($year, $admin_id);
+        
+        if ($result['success']) {
+            $this->session->set_flashdata('success', $result['message']);
+        } else {
+            $this->session->set_flashdata('error', $result['message']);
+        }
+        
+        redirect('stock_import/import');
     }
 
     public function import_preview()
     {
+        $year = $this->session->userdata('login_year') ?? date('Y');
+        if (!$this->stock_model->check_rollover_status($year)) {
+            $this->session->set_flashdata('error', 'Tidak dapat melakukan import sebelum data stok sisa tahun sebelumnya ditarik.');
+            redirect('stock_import/import');
+        }
+
         $purchase_date = $this->input->post('purchase_date');
         if (empty($purchase_date)) {
             $this->session->set_flashdata('error', 'Tanggal Pembelian wajib diisi.');

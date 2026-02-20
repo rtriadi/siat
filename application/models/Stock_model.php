@@ -119,6 +119,103 @@ class Stock_model extends CI_Model
         ];
     }
 
+    /**
+     * Pastikan apakah tahun ini butuh rollover
+     * Hanya butuh jika tahun login > tahun transaksi pertama di sistem
+     */
+    public function needs_rollover($year)
+    {
+        $this->db->select('YEAR(MIN(created_at)) as first_year');
+        $first_tx = $this->db->get('stock_movement')->row_array();
+        
+        $first_year = !empty($first_tx['first_year']) ? (int)$first_tx['first_year'] : (int)date('Y');
+        
+        return $year > $first_year;
+    }
+
+    /**
+     * Cek apakah rollover untuk tahun tsb sudah komplit
+     */
+    public function check_rollover_status($year)
+    {
+        if (!$this->needs_rollover($year)) {
+            return true;
+        }
+
+        $status = $this->db->get_where('yearly_rollover', ['year' => $year])->row_array();
+        return ($status && $status['status'] === 'completed');
+    }
+
+    /**
+     * Eksekusi penarikan saldo sisa dari akhir tahun sebelumnya (dec 31)
+     */
+    public function process_yearly_rollover($year, $admin_id)
+    {
+        if ($this->check_rollover_status($year)) {
+            return ['success' => false, 'message' => 'Tarik data sudah dilakukan untuk tahun ini.'];
+        }
+
+        $prev_year = $year - 1;
+        
+        // Use keadaan_barang logic to get exact ending stock of previous year
+        $filters = [
+            'year' => $prev_year
+        ];
+        $prev_stock = $this->get_keadaan_barang($filters);
+        
+        $this->db->trans_begin();
+
+        $movements = [];
+        $insertedCount = 0;
+
+        foreach ($prev_stock as $item) {
+            $ending_stock = (int)$item['ending_stock'];
+            if ($ending_stock > 0) {
+                // Determine item_id
+                $db_item = $this->db->select('id_item')->get_where('stock_item', ['item_code' => $item['item_code']])->row_array();
+                if (!$db_item) continue;
+                
+                $item_id = $db_item['id_item'];
+                
+                // Add initial stock movement for exactly Jan 1st 00:00:00 of the current year
+                $movements[] = [
+                    'item_id' => $item_id,
+                    'movement_type' => 'adjust', // Using adjust for generic initial injection
+                    'qty_delta' => $ending_stock,
+                    'reason' => 'Saldo Awal Tahun ' . $year,
+                    'user_id' => $admin_id,
+                    'created_at' => $year . '-01-01 00:00:00'
+                ];
+                $insertedCount++;
+            }
+        }
+
+        // Insert movements
+        if (!empty($movements)) {
+            $this->db->insert_batch('stock_movement', $movements);
+        }
+
+        // Record rollover status
+        $this->db->replace('yearly_rollover', [
+            'year' => $year,
+            'status' => 'completed',
+            'processed_at' => date('Y-m-d H:i:s'),
+            'processed_by' => $admin_id
+        ]);
+
+        if ($this->db->trans_status() === false) {
+            $this->db->trans_rollback();
+            return ['success' => false, 'message' => 'Gagal menarik data stok awal.'];
+        }
+
+        $this->db->trans_commit();
+
+        return [
+            'success' => true, 
+            'message' => 'Berhasil menarik ' . $insertedCount . ' item sebagai saldo awal tahun ' . $year . '.'
+        ];
+    }
+
     public function get_all($filters = [])
     {
         $this->db

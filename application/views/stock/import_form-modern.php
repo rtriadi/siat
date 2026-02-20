@@ -47,6 +47,17 @@
                 </a>
             </div>
 
+            <?php if (isset($needs_rollover) && $needs_rollover): ?>
+            <div class="alert alert-warning" style="background-color: #fffbeb; border: 1px solid #fde68a; color: #92400e; padding: 24px; border-radius: var(--radius-lg); margin-top: 16px;">
+                <h3 style="margin-top: 0; font-size: 18px; font-weight: 600;"><i class="fas fa-exclamation-triangle" style="margin-right: 8px;"></i> Perhatian: Saldo Awal Belum Ditarik</h3>
+                <p style="margin-bottom: 20px;">Data stok sisa dari tahun sebelumnya belum ditarik ke tahun <strong><?= $login_year ?></strong>. Anda wajib menyelesaikan proses penarikan saldo awal ini terlebih dahulu sebelum dapat mengimpor stok baru.</p>
+                <form action="<?= site_url('stock_import/do_rollover') ?>" method="post">
+                    <button type="submit" class="btn btn-warning" style="background-color: #f59e0b; color: #fff; border: none; font-weight: bold; padding: 10px 20px;">
+                        <i class="fas fa-file-import" style="margin-right: 8px;"></i> Tarik Data Stok Sisa Tahun Sebelumnya
+                    </button>
+                </form>
+            </div>
+            <?php else: ?>
             <form action="<?= site_url('stock_import/import_preview') ?>" method="post" enctype="multipart/form-data" class="import-form">
                 <div class="upload-area" id="uploadArea">
                     <div class="upload-icon">
@@ -86,6 +97,7 @@
                     </button>
                 </div>
             </form>
+            <?php endif; ?>
         </div>
     </div>
 </section>
