@@ -113,9 +113,11 @@ class Request_model extends CI_Model
 
     public function get_by_user($user_id)
     {
+        $year = $this->session->userdata('login_year') ?? date('Y');
         return $this->db
             ->from('request_header')
             ->where('user_id', $user_id)
+            ->where('YEAR(created_at)', $year)
             ->order_by('created_at', 'DESC')
             ->get()
             ->result_array();
@@ -123,16 +125,20 @@ class Request_model extends CI_Model
 
     public function count_active_requests()
     {
+        $year = $this->session->userdata('login_year') ?? date('Y');
         return $this->db
             ->where_in('status', ['pending', 'approved'])
+            ->where('YEAR(created_at)', $year)
             ->from('request_header')
             ->count_all_results();
     }
 
     public function get_all($filters = [])
     {
+        $year = $this->session->userdata('login_year') ?? date('Y');
         $this->db->from('request_header');
         $this->db->join('user', 'user.id_user = request_header.user_id', 'left');
+        $this->db->where('YEAR(request_header.created_at)', $year);
 
         if (!empty($filters['status'])) {
             $this->db->where('request_header.status', $filters['status']);
@@ -509,6 +515,9 @@ class Request_model extends CI_Model
             ->join('request_item', 'request_item.request_id = request_header.id_request', 'inner')
             ->join('stock_item', 'stock_item.id_item = request_item.item_id', 'left')
             ->join('user', 'user.id_user = request_header.user_id', 'left');
+
+        $year = $this->session->userdata('login_year') ?? date('Y');
+        $this->db->where('YEAR(request_header.created_at)', $year);
 
         if (!empty($filters['date_start'])) {
             $date_start = date('Y-m-d 00:00:00', strtotime($filters['date_start']));

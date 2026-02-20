@@ -26,9 +26,10 @@ class Report_pdf extends CI_Controller
         $date_start = $this->input->get('date_start');
         $date_end = $this->input->get('date_end');
         $month = $this->input->get('month');
-        $year = $this->input->get('year');
+        $year = $this->session->userdata('login_year') ?? date('Y');
         $print_date = $this->input->get('print_date');
         $paper_size = $this->input->get('paper_size');
+        $print_orientation_input = $this->input->get('print_orientation');
 
         $data['report_type'] = $report_type;
         $data['period_type'] = $period_type ?: 'monthly';
@@ -38,6 +39,7 @@ class Report_pdf extends CI_Controller
         $data['year'] = $year ?: date('Y');
         $data['print_date'] = $print_date ?: date('Y-m-d');
         $data['paper_size'] = $paper_size ?: 'A4';
+        $data['print_orientation_input'] = $print_orientation_input ?: 'auto';
         $data['is_print'] = false; // Flag for preview mode
 
         $data['preview_data'] = null;
@@ -92,10 +94,12 @@ class Report_pdf extends CI_Controller
         $data['date_start'] = $this->input->get('date_start');
         $data['date_end'] = $this->input->get('date_end');
         $data['month'] = $this->input->get('month') ?: date('m');
-        $data['year'] = $this->input->get('year') ?: date('Y');
+        $data['year'] = $this->session->userdata('login_year') ?? date('Y');
         $print_date = $this->input->get('print_date');
         $data['print_date'] = $print_date ?: date('Y-m-d');
         $data['paper_size'] = $this->input->get('paper_size') ?: 'A4';
+        $print_orientation_input = $this->input->get('print_orientation');
+        $data['print_orientation_input'] = $print_orientation_input ?: 'auto';
         $data['is_print'] = true; // Flag for print mode
         
         $data['signatories'] = $this->Signatory_model->get_all_roles();
@@ -104,8 +108,13 @@ class Report_pdf extends CI_Controller
         $data['report_data'] = $this->get_report_data($report_type, $filters);
 
         // Determine paper orientation for print CSS
-        $is_landscape = in_array($report_type, ['buku_bantu_penerimaan', 'buku_bantu_pengeluaran', 'keadaan_barang']);
-        $data['print_orientation'] = $is_landscape ? 'landscape' : 'portrait';
+        if ($print_orientation_input && $print_orientation_input !== 'auto') {
+            $data['print_orientation'] = $print_orientation_input;
+        } else {
+            // Default logic based on report type
+            $is_landscape = in_array($report_type, ['buku_bantu_penerimaan', 'buku_bantu_pengeluaran', 'keadaan_barang']);
+            $data['print_orientation'] = $is_landscape ? 'landscape' : 'portrait';
+        }
 
         // Render report HTML content
         $report_html = $this->load->view('reports/pdf/' . $report_type, $data, true);

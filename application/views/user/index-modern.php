@@ -67,10 +67,6 @@
                     <tr>
                         <td>
                             <div class="user-info">
-                                <div class="user-avatar">
-                                    <?php $initial = !empty($user['nama']) ? substr($user['nama'], 0, 1) : substr($user['username'], 0, 1); ?>
-                                    <?= strtoupper($initial) ?>
-                                </div>
                                 <span><?= !empty($user['nama']) ? htmlspecialchars($user['nama']) : '-' ?></span>
                             </div>
                         </td>

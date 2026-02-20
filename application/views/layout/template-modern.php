@@ -973,7 +973,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <a href="<?= base_url('dashboard') ?>" class="sidebar-logo">
-                    <img src="<?= base_url() ?>assets/dist/img/logo_pta.png" alt="SIAT Logo">
+                    <img src="<?= base_url() ?>assets/dist/img/logopakota.png" alt="SIAT Logo">
                     <div>
                         <div class="sidebar-logo-text">SIAT</div>
                         <div class="sidebar-logo-sub">Sistem Inventori ATK</div>
@@ -998,6 +998,11 @@ defined('BASEPATH') or exit('No direct script access allowed');
                 </div>
                 
                 <div class="header-right">
+                    <div class="header-btn" style="background: var(--surface-elevated); color: var(--text-primary); border-radius: 20px; padding: 0 16px; font-size: 13px; font-weight: 600; cursor: default; width: auto; border: 1px solid var(--border);" title="Tahun Login Aktif">
+                        <i class="fas fa-calendar-alt" style="margin-right: 6px; color: var(--accent);"></i>
+                        <?= $this->session->userdata('login_year') ?? date('Y') ?>
+                    </div>
+
                     <button class="header-btn" id="fullscreenBtn" title="Fullscreen">
                         <i class="fas fa-expand-arrows-alt"></i>
                     </button>

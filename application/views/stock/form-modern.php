@@ -39,6 +39,15 @@
                     </div>
                 </div>
 
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="unit" class="form-label">Satuan <span class="required">*</span></label>
+                        <input type="text" name="unit" id="unit" class="form-control" 
+                               value="<?= $is_edit ? htmlspecialchars($item['unit']) : 'Pcs' ?>" 
+                               placeholder="Contoh: Pcs, Rim, Box" required maxlength="50">
+                    </div>
+                </div>
+
                 <?php if ($is_edit): ?>
                     <div class="form-section">
                         <h4 class="section-title">Informasi Stok</h4>

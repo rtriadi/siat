@@ -44,6 +44,7 @@
 <style>
     .report-footer-container {
         margin-top: 40px;
+        page-break-inside: avoid;
     }
     .signature-table {
         width: 100%;

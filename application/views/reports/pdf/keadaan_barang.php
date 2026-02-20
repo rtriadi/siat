@@ -36,7 +36,7 @@
         text-transform: uppercase;
     }
     .report-period {
-        font-size: 12px;
+        font-size: 14px;
         font-weight: bold;
         margin: 0;
         text-transform: uppercase;

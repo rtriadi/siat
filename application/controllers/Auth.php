@@ -53,6 +53,7 @@ class Auth extends CI_Controller
                         'username' => $user['username'],
                         'nama' => $user['nama'],
                         'level' => $user['level'],
+                        'login_year' => $this->input->post('login_year') ?: date('Y'),
                         'must_change_password' => $user['must_change_password'],
                     ));
                     $this->user_model->update_login_meta($user['id_user'], date('Y-m-d H:i:s'));
@@ -79,6 +80,7 @@ class Auth extends CI_Controller
                         'username' => $user['username'],
                         'nama' => $user['nama'],
                         'level' => $user['level'],
+                        'login_year' => $this->input->post('login_year') ?: date('Y'),
                         'must_change_password' => $user['must_change_password'],
                     ));
                     $this->user_model->update_login_meta($user['id_user'], date('Y-m-d H:i:s'));

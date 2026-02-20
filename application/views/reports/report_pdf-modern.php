@@ -47,24 +47,21 @@
                         </select>
                     </div>
 
-                    <!-- Year -->
-                    <div class="form-group" id="yearField" style="<?= in_array($period_type, ['monthly', 'yearly']) ? '' : 'display:none;' ?>">
-                        <label class="form-label">Tahun</label>
-                        <select name="year" class="form-control">
-                            <?php for ($y = date('Y'); $y >= date('Y') - 5; $y--): ?>
-                                <option value="<?= $y ?>" <?= (int)$year == $y ? 'selected' : '' ?>><?= $y ?></option>
-                            <?php endfor; ?>
-                        </select>
-                    </div>
+                    <!-- Year input removed. Regulated by session login_year. -->
 
                     <!-- Date Range -->
+                    <?php 
+                        $session_year = $this->session->userdata('login_year') ?? date('Y');
+                        $min_date = $session_year . '-01-01'; 
+                        $max_date = $session_year . '-12-31'; 
+                    ?>
                     <div class="form-group" id="rangeFields" style="<?= $period_type == 'range' ? '' : 'display:none;' ?>">
                         <label class="form-label">Dari Tanggal</label>
-                        <input type="date" name="date_start" class="form-control" value="<?= $date_start ?>">
+                        <input type="date" name="date_start" class="form-control" value="<?= $date_start ?>" min="<?= $min_date ?>" max="<?= $max_date ?>">
                     </div>
                     <div class="form-group" id="rangeFieldsEnd" style="<?= $period_type == 'range' ? '' : 'display:none;' ?>">
                         <label class="form-label">Sampai Tanggal</label>
-                        <input type="date" name="date_end" class="form-control" value="<?= $date_end ?>">
+                        <input type="date" name="date_end" class="form-control" value="<?= $date_end ?>" min="<?= $min_date ?>" max="<?= $max_date ?>">
                     </div>
 
                     <!-- Print Date -->
@@ -79,6 +76,17 @@
                         <select name="paper_size" class="form-control" required>
                             <option value="A4" <?= ($paper_size ?? 'A4') == 'A4' ? 'selected' : '' ?>>A4</option>
                             <option value="F4" <?= ($paper_size ?? 'A4') == 'F4' ? 'selected' : '' ?>>F4 / Folio</option>
+                        </select>
+                    </div>
+
+                    <!-- Print Orientation -->
+                    <div class="form-group">
+                        <label class="form-label">Orientasi</label>
+                        <select name="print_orientation" class="form-control" required>
+                            <!-- Default is set based on selected report, but user can override -->
+                            <option value="portrait" <?= ($print_orientation_input ?? '') == 'portrait' ? 'selected' : '' ?>>Portrait</option>
+                            <option value="landscape" <?= ($print_orientation_input ?? '') == 'landscape' ? 'selected' : '' ?>>Landscape</option>
+                            <option value="auto" <?= empty($print_orientation_input) || $print_orientation_input == 'auto' ? 'selected' : '' ?>>Otomatis</option>
                         </select>
                     </div>
                 </div>
@@ -156,7 +164,6 @@
 function togglePeriodFields() {
     const type = document.getElementById('periodType').value;
     document.getElementById('monthlyFields').style.display = type === 'monthly' ? '' : 'none';
-    document.getElementById('yearField').style.display = (type === 'monthly' || type === 'yearly') ? '' : 'none';
     document.getElementById('rangeFields').style.display = type === 'range' ? '' : 'none';
     document.getElementById('rangeFieldsEnd').style.display = type === 'range' ? '' : 'none';
 }

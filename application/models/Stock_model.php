@@ -689,11 +689,13 @@ class Stock_model extends CI_Model
      */
     public function get_movements($id_item, $limit = 50)
     {
+        $year = $this->session->userdata('login_year') ?? date('Y');
         return $this->db
             ->select('stock_movement.*, user.nama as user_name')
             ->from('stock_movement')
             ->join('user', 'user.id_user = stock_movement.user_id', 'left')
             ->where('stock_movement.item_id', $id_item)
+            ->where('YEAR(stock_movement.created_at)', $year)
             ->order_by('stock_movement.created_at', 'DESC')
             ->limit($limit)
             ->get()
@@ -733,6 +735,9 @@ class Stock_model extends CI_Model
             $this->db->where('stock_item.category_id', $filters['category_id']);
         }
 
+        // Exclude internal virtual locks from the physical ledger report
+        $this->db->where_not_in('stock_movement.movement_type', ['reserve', 'cancel']);
+
         // Get all movements ordered by date ASC for running balance calculation
         $movements = $this->db
             ->order_by('stock_movement.created_at', 'ASC')
@@ -757,6 +762,9 @@ class Stock_model extends CI_Model
             ->join('stock_item', 'stock_item.id_item = stock_movement.item_id', 'left')
             ->join('stock_category', 'stock_category.id_category = stock_item.category_id', 'left')
             ->join('user', 'user.id_user = stock_movement.user_id', 'left');
+
+        $year = $this->session->userdata('login_year') ?? date('Y');
+        $this->db->where('YEAR(stock_movement.created_at)', $year);
 
         // Apply date range filter (inclusive)
         if (!empty($filters['date_start'])) {
@@ -838,22 +846,16 @@ class Stock_model extends CI_Model
 
             switch ($movement['movement_type']) {
                 case 'in':
+                case 'adjust':
                     $delta = $qty_delta;
                     break;
                 case 'out':
+                case 'deliver':
                     $delta = -$qty_delta;
-                    break;
-                case 'adjust':
-                    $delta = $qty_delta; // Can be positive or negative
                     break;
                 case 'reserve':
-                    $delta = -$qty_delta;
-                    break;
                 case 'cancel':
-                    $delta = $qty_delta;
-                    break;
-                case 'deliver':
-                    $delta = 0; // No change to available qty
+                    $delta = 0; // Excluded from physical ledger natively
                     break;
                 default:
                     $delta = 0;
@@ -879,7 +881,7 @@ class Stock_model extends CI_Model
 
     public function get_buku_bantu($filters, $type)
     {
-        $this->db->select('stock_movement.*, stock_item.item_name, stock_item.satuan, request_header.request_no, user.nama AS pegawai_nama');
+        $this->db->select('stock_movement.*, stock_item.item_name, stock_item.unit, request_header.request_no, user.nama AS pegawai_nama');
         $this->db->from('stock_movement');
         $this->db->join('stock_item', 'stock_movement.item_id = stock_item.id_item', 'left');
         $this->db->join('request_header', 'request_header.request_no = SUBSTRING_INDEX(stock_movement.reason, "#", -1)', 'left');
@@ -888,7 +890,7 @@ class Stock_model extends CI_Model
         if ($type === 'in') {
             $this->db->where_in('stock_movement.movement_type', ['in', 'adjust']);
         } elseif ($type === 'out') {
-            $this->db->where_in('stock_movement.movement_type', ['out', 'deliver', 'reserve']);
+            $this->db->where_in('stock_movement.movement_type', ['out', 'deliver']);
         }
 
         if (!empty($filters['date_start'])) $this->db->where('DATE(stock_movement.created_at) >=', $filters['date_start']);
@@ -920,7 +922,7 @@ class Stock_model extends CI_Model
     public function get_keadaan_barang($filters)
     {
         // 1. Get current stock for all items
-        $this->db->select('id_item, item_code, item_name, available_qty, satuan');
+        $this->db->select('id_item, item_code, item_name, available_qty, reserved_qty, unit');
         $items = $this->db->get('stock_item')->result_array();
 
         // 2. Determine the period boundary
@@ -943,13 +945,13 @@ class Stock_model extends CI_Model
             $processed[$item['id_item']] = [
                 'item_code' => $item['item_code'],
                 'item_name' => $item['item_name'],
-                'satuan' => $item['satuan'] ?: 'Pcs',
+                'unit' => $item['unit'] ?: 'Pcs',
                 'beginning_stock' => 0,
                 'stock_in' => 0,
                 'stock_out' => 0,
                 'ending_stock' => 0,
-                // Internal use for back-calculation
-                'current_qty' => (int)$item['available_qty'],
+                // Internal use for back-calculation: physical stock in warehouse
+                'current_qty' => ((int)$item['available_qty'] + (int)$item['reserved_qty']),
                 'future_in' => 0,
                 'future_out' => 0
             ];
@@ -969,17 +971,17 @@ class Stock_model extends CI_Model
 
             // Movement within selected period
             if ($m_date >= $date_start && $m_date <= $date_end) {
-                if ($type === 'in' || $type === 'adjust') {
+                if (in_array($type, ['in', 'adjust'])) {
                     $processed[$id]['stock_in'] += $qty;
-                } elseif (in_array($type, ['out', 'deliver', 'reserve'])) {
+                } elseif (in_array($type, ['out', 'deliver'])) {
                     $processed[$id]['stock_out'] += $qty;
                 }
             } 
             // Movement AFTER selected period (used to back-calculate)
             elseif ($m_date > $date_end) {
-                if ($type === 'in' || $type === 'adjust') {
+                if (in_array($type, ['in', 'adjust'])) {
                     $processed[$id]['future_in'] += $qty;
-                } elseif (in_array($type, ['out', 'deliver', 'reserve'])) {
+                } elseif (in_array($type, ['out', 'deliver'])) {
                     $processed[$id]['future_out'] += $qty;
                 }
             }

@@ -80,6 +80,7 @@ class Stock extends CI_Controller
     {
         $this->form_validation->set_rules('category_id', 'Kategori', 'required|trim');
         $this->form_validation->set_rules('item_name', 'Nama Item', 'required|trim|max_length[255]');
+        $this->form_validation->set_rules('unit', 'Satuan', 'required|trim|max_length[50]');
         $this->form_validation->set_rules('available_qty', 'Jumlah Awal', 'required|integer|greater_than_equal_to[0]');
         $this->form_validation->set_rules('low_stock_threshold', 'Batas Stok Minimum', 'required|integer|greater_than_equal_to[0]');
 
@@ -91,6 +92,7 @@ class Stock extends CI_Controller
         $data = [
             'category_id' => $this->input->post('category_id'),
             'item_name' => $this->input->post('item_name'),
+            'unit' => $this->input->post('unit'),
             'available_qty' => $this->input->post('available_qty'),
             'low_stock_threshold' => $this->input->post('low_stock_threshold')
         ];
@@ -134,6 +136,7 @@ class Stock extends CI_Controller
     {
         $this->form_validation->set_rules('category_id', 'Kategori', 'required|trim');
         $this->form_validation->set_rules('item_name', 'Nama Item', 'required|trim|max_length[255]');
+        $this->form_validation->set_rules('unit', 'Satuan', 'required|trim|max_length[50]');
         $this->form_validation->set_rules('low_stock_threshold', 'Batas Stok Minimum', 'required|integer|greater_than_equal_to[0]');
         $this->form_validation->set_rules('qty_adjustment', 'Penyesuaian Stok', 'integer');
 
@@ -146,6 +149,7 @@ class Stock extends CI_Controller
         $item_data = [
             'category_id' => $this->input->post('category_id'),
             'item_name' => $this->input->post('item_name'),
+            'unit' => $this->input->post('unit'),
             'low_stock_threshold' => $this->input->post('low_stock_threshold')
         ];
 

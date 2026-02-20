@@ -14,7 +14,7 @@
     .report-title-container { text-align: center; margin-bottom: 20px; }
     .report-main-title { font-size: 14px; font-weight: bold; margin: 0 0 4px 0; text-transform: uppercase; }
     .report-sub-title { font-size: 14px; font-weight: bold; margin: 0 0 4px 0; text-transform: uppercase; }
-    .report-period { font-size: 12px; font-weight: bold; margin: 0; text-transform: uppercase; }
+    .report-period { font-size: 14px; font-weight: bold; margin: 0; text-transform: uppercase; }
 
     .data-table { width: 100%; border-collapse: collapse; font-family: Arial, sans-serif; font-size: 10px; }
     .data-table th { border: 1px solid #000; padding: 8px 4px; background: #f0f0f0; text-align: center; font-weight: bold; }

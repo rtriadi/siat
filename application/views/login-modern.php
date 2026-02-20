@@ -421,6 +421,22 @@
                         <i class="fas fa-lock input-icon"></i>
                     </div>
                 </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="login_year">Tahun Login</label>
+                    <div class="input-wrapper">
+                        <select name="login_year" id="login_year" class="form-control" required style="appearance: none;">
+                            <?php 
+                            $current_year = date('Y');
+                            for($y = $current_year; $y >= $current_year - 5; $y--): 
+                            ?>
+                                <option value="<?= $y ?>"><?= $y ?></option>
+                            <?php endfor; ?>
+                        </select>
+                        <i class="fas fa-calendar-alt input-icon"></i>
+                        <i class="fas fa-chevron-down" style="position: absolute; right: 16px; top: 50%; transform: translateY(-50%); color: var(--text-secondary); pointer-events: none;"></i>
+                    </div>
+                </div>
                 
                 <button type="submit" class="btn-login">
                     <span>Masuk</span>

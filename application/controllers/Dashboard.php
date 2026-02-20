@@ -39,13 +39,16 @@ class Dashboard extends CI_Controller
             }
         }
 
+        $year = $this->session->userdata('login_year') ?? date('Y');
         $pending_requests = $this->db
             ->where('status', 'pending')
+            ->where('YEAR(created_at)', $year)
             ->count_all_results('request_header');
             
         $delivered_today = $this->db
             ->where('status', 'delivered')
             ->where('DATE(delivered_at)', date('Y-m-d'))
+            ->where('YEAR(created_at)', $year)
             ->count_all_results('request_header');
 
         $this->db->select('
@@ -62,6 +65,7 @@ class Dashboard extends CI_Controller
         $this->db->join('user u', 'u.id_user = rh.user_id', 'left');
         $this->db->join('request_item ri', 'ri.request_id = rh.id_request', 'left');
         $this->db->join('stock_item si', 'si.id_item = ri.item_id', 'left');
+        $this->db->where('YEAR(rh.created_at)', $year);
         $this->db->group_by('rh.id_request');
         $this->db->order_by('rh.created_at', 'DESC');
         $this->db->limit(8);
@@ -119,20 +123,24 @@ class Dashboard extends CI_Controller
     private function employee_dashboard()
     {
         $user_id = $this->session->userdata('id_user');
+        $year = $this->session->userdata('login_year') ?? date('Y');
         
         $pending_count = $this->db
             ->where('user_id', $user_id)
             ->where('status', 'pending')
+            ->where('YEAR(created_at)', $year)
             ->count_all_results('request_header');
             
         $approved_count = $this->db
             ->where('user_id', $user_id)
             ->where('status', 'approved')
+            ->where('YEAR(created_at)', $year)
             ->count_all_results('request_header');
             
         $delivered_count = $this->db
             ->where('user_id', $user_id)
             ->where('status', 'delivered')
+            ->where('YEAR(created_at)', $year)
             ->count_all_results('request_header');
 
         $this->db->select('
@@ -148,6 +156,7 @@ class Dashboard extends CI_Controller
         $this->db->join('request_item ri', 'ri.request_id = rh.id_request', 'left');
         $this->db->join('stock_item si', 'si.id_item = ri.item_id', 'left');
         $this->db->where('rh.user_id', $user_id);
+        $this->db->where('YEAR(rh.created_at)', $year);
         $this->db->group_by('rh.id_request');
         $this->db->order_by('rh.created_at', 'DESC');
         $this->db->limit(10);

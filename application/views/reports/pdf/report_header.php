@@ -3,7 +3,7 @@
     <table class="kop-table">
         <tr>
             <td width="90" class="kop-logo-cell">
-                <img src="<?= base_url('assets/dist/img/logopakota.png') ?>" alt="Logo" class="kop-logo">
+                <img src="<?= base_url('assets/dist/img/Logo BW.png') ?>" alt="Logo" class="kop-logo">
             </td>
             <td class="kop-text-cell">
                 <div class="kop-line-1">MAHKAMAH AGUNG REPUBLIK INDONESIA</div>

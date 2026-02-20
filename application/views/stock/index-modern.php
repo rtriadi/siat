@@ -26,6 +26,7 @@
                     <tr>
                         <th>Kode</th>
                         <th>Item Name</th>
+                        <th style="width: 100px;">Satuan</th>
                         <th style="width: 120px;">Tersedia</th>
                         <th style="width: 120px;">Threshold</th>
                         <th style="width: 100px;">Status</th>
@@ -92,6 +93,7 @@
                         <tr>
                             <th>Kode</th>
                             <th>Item Name</th>
+                            <th style="width: 100px;">Satuan</th>
                             <th style="width: 120px;">Tersedia</th>
                             <th style="width: 120px;">Threshold</th>
                             <th style="width: 100px;">Status</th>
@@ -109,6 +111,9 @@
                                     <i class="fas fa-box"></i>
                                     <?= htmlspecialchars($item['item_name']) ?>
                                 </div>
+                            </td>
+                            <td>
+                                <span class="unit-badge"><?= htmlspecialchars($item['unit'] ?? 'Pcs') ?></span>
                             </td>
                             <td>
                                 <span class="qty"><?= number_format($item['available_qty']) ?></span>
@@ -214,6 +219,8 @@ function clearSearch() {
 .page-header-content { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
 .page-title { font-size: 28px; font-weight: 700; margin: 0; }
 .page-subtitle { font-size: 14px; color: var(--text-secondary); margin: 4px 0 0; }
+
+.unit-badge { font-size: 12px; color: #6b7280; background: #f3f4f6; padding: 2px 8px; border-radius: 4px; border: 1px solid #e5e7eb; }
 
 .alert { padding: 14px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
 .alert-success { background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }

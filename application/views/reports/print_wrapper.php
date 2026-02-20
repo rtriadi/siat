@@ -100,7 +100,21 @@
         @media print {
             @page {
                 size: <?= $print_size_css ?> <?= isset($print_orientation) ? $print_orientation : 'portrait' ?>;
-                margin: 10mm 15mm;
+                margin: 10mm 15mm 15mm 15mm; /* increased bottom margin for footer */
+                
+                @bottom-right {
+                    content: "Halaman " counter(page) " dari " counter(pages);
+                    font-family: Arial, sans-serif;
+                    font-size: 9px;
+                    color: #555;
+                }
+                
+                @bottom-left {
+                    content: "SIAT (Sistem Inventori ATK Terpadu) - Pengadilan Agama Gorontalo";
+                    font-family: Arial, sans-serif;
+                    font-size: 9px;
+                    color: #555;
+                }
             }
 
             .print-toolbar {
