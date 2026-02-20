@@ -1178,9 +1178,14 @@ class Stock_model extends CI_Model
         // ending_stock = beginning_stock + period_in - period_out
         // We know: current_qty = ending_stock + future_in - future_out
         // So: ending_stock = current_qty - future_in + future_out
-        foreach ($processed as &$p) {
+        foreach ($processed as $key => &$p) {
             $p['ending_stock'] = $p['current_qty'] - $p['future_in'] + $p['future_out'];
             $p['beginning_stock'] = $p['ending_stock'] - $p['stock_in'] + $p['stock_out'];
+            
+            // Remove items with zero activity and zero stock
+            if ($p['beginning_stock'] == 0 && $p['stock_in'] == 0 && $p['stock_out'] == 0 && $p['ending_stock'] == 0) {
+                unset($processed[$key]);
+            }
         }
 
         return array_values($processed);
