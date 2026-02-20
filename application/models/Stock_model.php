@@ -1059,7 +1059,14 @@ class Stock_model extends CI_Model
 
     public function get_buku_bantu($filters, $type)
     {
-        $this->db->select('stock_movement.*, stock_item.item_name, stock_item.unit, request_header.request_no, user.nama AS pegawai_nama');
+        $this->db->select('
+            stock_movement.*, 
+            stock_item.item_name, 
+            stock_item.unit, 
+            request_header.request_no, 
+            user.nama AS pegawai_nama,
+            COALESCE(stock_movement.purchase_date, DATE(stock_movement.created_at)) AS display_date
+        ');
         $this->db->from('stock_movement');
         $this->db->join('stock_item', 'stock_movement.item_id = stock_item.id_item', 'left');
         $this->db->join('request_header', 'request_header.request_no = SUBSTRING_INDEX(stock_movement.reason, "#", -1)', 'left');
@@ -1071,12 +1078,14 @@ class Stock_model extends CI_Model
             $this->db->where_in('stock_movement.movement_type', ['out', 'deliver']);
         }
 
-        if (!empty($filters['date_start'])) $this->db->where('DATE(stock_movement.created_at) >=', $filters['date_start']);
-        if (!empty($filters['date_end'])) $this->db->where('DATE(stock_movement.created_at) <=', $filters['date_end']);
-        if (!empty($filters['month'])) $this->db->where('MONTH(stock_movement.created_at)', $filters['month']);
-        if (!empty($filters['year'])) $this->db->where('YEAR(stock_movement.created_at)', $filters['year']);
+        // Filters use the coalesce date
+        if (!empty($filters['date_start'])) $this->db->where('COALESCE(stock_movement.purchase_date, DATE(stock_movement.created_at)) >=', $filters['date_start']);
+        if (!empty($filters['date_end'])) $this->db->where('COALESCE(stock_movement.purchase_date, DATE(stock_movement.created_at)) <=', $filters['date_end']);
+        if (!empty($filters['month'])) $this->db->where('MONTH(COALESCE(stock_movement.purchase_date, stock_movement.created_at)) =', $filters['month']);
+        if (!empty($filters['year'])) $this->db->where('YEAR(COALESCE(stock_movement.purchase_date, stock_movement.created_at)) =', $filters['year']);
         
-        $this->db->order_by('stock_movement.created_at', 'ASC');
+        $this->db->order_by('display_date', 'ASC');
+        $this->db->order_by('stock_movement.created_at', 'ASC'); // secondary sort
         return $this->db->get()->result_array();
     }
 

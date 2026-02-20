@@ -45,7 +45,7 @@
         <?php if (!empty($report_data)): $no = 1; foreach ($report_data as $row): ?>
         <tr>
             <td class="text-center"><?= $no++ ?></td>
-            <td class="text-center"><?= date('d/m/Y', strtotime($row['created_at'])) ?></td>
+            <td class="text-center"><?= date('d/m/Y', strtotime($row['display_date'])) ?></td>
             <td><?= htmlspecialchars($row['item_name'] ?? '-') ?></td>
             <td class="text-center"><?= htmlspecialchars($row['unit'] ?? 'Pcs') ?></td>
             <td class="text-center"><?= (int)($row['qty_delta'] ?? 0) ?></td>
