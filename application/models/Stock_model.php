@@ -879,9 +879,11 @@ class Stock_model extends CI_Model
 
     public function get_buku_bantu($filters, $type)
     {
-        $this->db->select('stock_movement.*, stock_item.item_name');
+        $this->db->select('stock_movement.*, stock_item.item_name, stock_item.satuan, request_header.request_no, user.nama AS pegawai_nama');
         $this->db->from('stock_movement');
         $this->db->join('stock_item', 'stock_movement.item_id = stock_item.id_item', 'left');
+        $this->db->join('request_header', 'request_header.request_no = SUBSTRING_INDEX(stock_movement.reason, "#", -1)', 'left');
+        $this->db->join('user', 'user.id_user = request_header.user_id', 'left');
         
         if ($type === 'in') {
             $this->db->where_in('stock_movement.movement_type', ['in', 'adjust']);
@@ -917,39 +919,79 @@ class Stock_model extends CI_Model
 
     public function get_keadaan_barang($filters)
     {
-        // Base items
-        $this->db->select('id_item, item_name, available_qty');
+        // 1. Get current stock for all items
+        $this->db->select('id_item, item_code, item_name, available_qty, satuan');
         $items = $this->db->get('stock_item')->result_array();
 
-        // Calculate in/out for the period
-        $movements = $this->get_stock_movement_report($filters);
+        // 2. Determine the period boundary
+        $date_start = null;
+        $date_end = null;
         
+        if (!empty($filters['month']) && !empty($filters['year'])) {
+            $date_start = $filters['year'] . '-' . str_pad($filters['month'], 2, '0', STR_PAD_LEFT) . '-01 00:00:00';
+            $date_end = date('Y-m-t 23:59:59', strtotime($date_start));
+        } elseif (!empty($filters['year'])) {
+            $date_start = $filters['year'] . '-01-01 00:00:00';
+            $date_end = $filters['year'] . '-12-31 23:59:59';
+        } elseif (!empty($filters['date_start']) && !empty($filters['date_end'])) {
+            $date_start = $filters['date_start'] . ' 00:00:00';
+            $date_end = $filters['date_end'] . ' 23:59:59';
+        }
+
         $processed = [];
         foreach ($items as $item) {
             $processed[$item['id_item']] = [
-                'nama_bahan' => $item['item_name'],
-                'saldo_awal' => $item['available_qty'], // Mocking current available as start
-                'barang_masuk' => 0,
-                'sisa_barang_terpakai' => 0,
-                'satuan' => 'Pcs',
-                'keterangan' => ''
+                'item_code' => $item['item_code'],
+                'item_name' => $item['item_name'],
+                'satuan' => $item['satuan'] ?: 'Pcs',
+                'beginning_stock' => 0,
+                'stock_in' => 0,
+                'stock_out' => 0,
+                'ending_stock' => 0,
+                // Internal use for back-calculation
+                'current_qty' => (int)$item['available_qty'],
+                'future_in' => 0,
+                'future_out' => 0
             ];
         }
 
-        foreach ($movements as $mov) {
+        // 3. Get ALL movements to back-calculate beginning stock and get period movements
+        $this->db->select('item_id, movement_type, qty_delta, created_at');
+        $all_movements = $this->db->get('stock_movement')->result_array();
+
+        foreach ($all_movements as $mov) {
             $id = $mov['item_id'];
-            if (isset($processed[$id])) {
-                if ($mov['movement_type'] == 'in') {
-                    $processed[$id]['barang_masuk'] += $mov['qty_delta'];
-                } elseif ($mov['movement_type'] == 'out' || $mov['movement_type'] == 'deliver') {
-                    $processed[$id]['sisa_barang_terpakai'] += $mov['qty_delta'];
+            if (!isset($processed[$id])) continue;
+
+            $m_date = $mov['created_at'];
+            $qty = (int)$mov['qty_delta'];
+            $type = $mov['movement_type'];
+
+            // Movement within selected period
+            if ($m_date >= $date_start && $m_date <= $date_end) {
+                if ($type === 'in' || $type === 'adjust') {
+                    $processed[$id]['stock_in'] += $qty;
+                } elseif (in_array($type, ['out', 'deliver', 'reserve'])) {
+                    $processed[$id]['stock_out'] += $qty;
+                }
+            } 
+            // Movement AFTER selected period (used to back-calculate)
+            elseif ($m_date > $date_end) {
+                if ($type === 'in' || $type === 'adjust') {
+                    $processed[$id]['future_in'] += $qty;
+                } elseif (in_array($type, ['out', 'deliver', 'reserve'])) {
+                    $processed[$id]['future_out'] += $qty;
                 }
             }
         }
 
+        // 4. Final calculation: 
+        // ending_stock = beginning_stock + period_in - period_out
+        // We know: current_qty = ending_stock + future_in - future_out
+        // So: ending_stock = current_qty - future_in + future_out
         foreach ($processed as &$p) {
-            $p['total_barang'] = $p['saldo_awal'] + $p['barang_masuk'];
-            $p['saldo_baru'] = $p['total_barang'] - $p['sisa_barang_terpakai'];
+            $p['ending_stock'] = $p['current_qty'] - $p['future_in'] + $p['future_out'];
+            $p['beginning_stock'] = $p['ending_stock'] - $p['stock_in'] + $p['stock_out'];
         }
 
         return array_values($processed);

@@ -11,14 +11,12 @@ tr:nth-child(even) { background: #f5f5f5; }
 <table>
     <thead>
         <tr>
-            <th>No</th>
-            <th>Tanggal</th>
-            <th>No. Request</th>
-            <th>Pegawai</th>
+            <th width="30">No</th>
+            <th width="80">Tanggal</th>
             <th>Nama Barang</th>
-            <th>Satuan</th>
-            <th>Qty Diterima</th>
-            <th>Ket</th>
+            <th width="60">Satuan</th>
+            <th width="80">Qty Masuk</th>
+            <th>Keterangan</th>
         </tr>
     </thead>
     <tbody>
@@ -26,15 +24,13 @@ tr:nth-child(even) { background: #f5f5f5; }
         <tr>
             <td class="text-center"><?= $no++ ?></td>
             <td class="text-center"><?= date('d/m/Y', strtotime($row['created_at'])) ?></td>
-            <td><?= htmlspecialchars($row['request_no'] ?? '-') ?></td>
-            <td><?= htmlspecialchars($row['nama'] ?? '-') ?></td>
             <td><?= htmlspecialchars($row['item_name'] ?? '-') ?></td>
             <td class="text-center"><?= htmlspecialchars($row['satuan'] ?? 'Pcs') ?></td>
-            <td class="text-center"><?= (int)($row['qty_delivered'] ?? 0) ?></td>
-            <td></td>
+            <td class="text-center"><?= (int)($row['qty_delta'] ?? 0) ?></td>
+            <td><?= htmlspecialchars($row['reason'] ?? '') ?></td>
         </tr>
         <?php endforeach; else: ?>
-        <tr><td colspan="8" style="text-align:center; color:#999; padding:20px;">Tidak ada data</td></tr>
+        <tr><td colspan="6" style="text-align:center; color:#999; padding:20px;">Tidak ada data</td></tr>
         <?php endif; ?>
     </tbody>
 </table>

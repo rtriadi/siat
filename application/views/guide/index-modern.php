@@ -122,7 +122,7 @@
                         <div class="step-card-number">01</div>
                         <div class="step-card-content">
                             <h3>Login & Persiapan</h3>
-                            <p>Masuk menggunakan kredensial administrator. Jika pertama kali, pastikan password sudah diganti.</p>
+                            <p>Masuk menggunakan kredensial administrator. Jika login pertama kali, ganti password segera.</p>
                             <div class="code-block">
                                 <code>Username: admin</code>
                                 <code>Password: admin123</code>
@@ -136,22 +136,22 @@
                             <h3>Setup Awal</h3>
                             <p>Sebelum operasional, lakukan setup berikut:</p>
                             <ul class="feature-list">
-                                <li><i class="fas fa-folder"></i> <strong>Kelola Kategori</strong> - Buat kategori item ATK</li>
-                                <li><i class="fas fa-users"></i> <strong>Import Pegawai</strong> - Data karyawan dari Excel</li>
-                                <li><i class="fas fa-box"></i> <strong>Import Stok</strong> - Data inventori ATK awal</li>
+                                <li><i class="fas fa-folder"></i> <strong>Kelola Kategori</strong> - Buat kategori item ATK (Kertas, Tinta, dll)</li>
+                                <li><i class="fas fa-users"></i> <strong>Import Pegawai</strong> - Daftarkan pegawai dari Excel (kolom: Nama, Username, NIP, Jabatan)</li>
+                                <li><i class="fas fa-file-import"></i> <strong>Import Stok</strong> - Upload data stok awal dari Excel. <strong>Wajib isi Tanggal Pembelian</strong> agar tercatat di Buku Bantu Penerimaan.</li>
                             </ul>
-                            <p class="tip"><i class="fas fa-lightbulb"></i> Ikuti format template Excel yang disediakan.</p>
+                            <p class="tip"><i class="fas fa-lightbulb"></i> Download template Excel yang tersedia di halaman masing-masing menu.</p>
                         </div>
                     </div>
 
                     <div class="step-card">
                         <div class="step-card-number">03</div>
                         <div class="step-card-content">
-                            <h3>Kelola Kategori & Stok</h3>
+                            <h3>Kelola Stok & Kategori</h3>
                             <ul class="feature-list">
-                                <li><i class="fas fa-folder"></i> <strong>Kelola Kategori</strong> - Buat dan manage kategori item</li>
-                                <li><i class="fas fa-boxes"></i> <strong>Kelola Stok</strong> - Tambah, edit, dan sesuaikan stok</li>
-                                <li><i class="fas fa-plus"></i> <strong>Tambah Item</strong> - Input item baru dengan kategori dan threshold</li>
+                                <li><i class="fas fa-folder"></i> <strong>Kelola Kategori</strong> - Tambah dan kelola kategori item</li>
+                                <li><i class="fas fa-boxes"></i> <strong>Kelola Stok</strong> - Lihat, tambah, edit, hapus, dan sesuaikan stok barang</li>
+                                <li><i class="fas fa-sliders-h"></i> <strong>Penyesuaian Stok</strong> - Koreksi stok jika ada selisih fisik gudang</li>
                             </ul>
                         </div>
                     </div>
@@ -159,39 +159,14 @@
                     <div class="step-card">
                         <div class="step-card-number">04</div>
                         <div class="step-card-content">
-                            <h3>Kelola Permintaan</h3>
-                            <p>Menu <strong>Kelola Permintaan</strong> untuk:</p>
+                            <h3>Kelola Permintaan ATK</h3>
+                            <p>Menu <strong>Kelola Permintaan</strong> digunakan untuk memproses permohonan ATK dari pegawai:</p>
                             <ul class="feature-list">
-                                <li><i class="fas fa-check-circle"></i> <strong>Approve</strong> - Menyetetujui permintaan</li>
-                                <li><i class="fas fa-times-circle"></i> <strong>Reject</strong> - Menolak dengan alasan</li>
-                                <li><i class="fas fa-truck"></i> <strong>Deliver</strong> - Menyerahkan item ke pegawai</li>
+                                <li><i class="fas fa-check-circle"></i> <strong>Setujui</strong> - Menyetujui permintaan, stok diubah menjadi Direservasi</li>
+                                <li><i class="fas fa-times-circle"></i> <strong>Tolak</strong> - Menolak permintaan dengan alasan, stok dikembalikan</li>
+                                <li><i class="fas fa-truck"></i> <strong>Serahkan</strong> - Konfirmasi penyerahan barang ke pegawai, stok masuk Digunakan</li>
                             </ul>
-                        </div>
-                    </div>
-                    </div>
-
-                    <div class="step-card">
-                        <div class="step-card-number">03</div>
-                        <div class="step-card-content">
-                            <h3>Kelola Kategori & Stok</h3>
-                            <ul class="feature-list">
-                                <li><i class="fas fa-folder"></i> <strong>Kelola Kategori</strong> - Buat dan manage kategori item</li>
-                                <li><i class="fas fa-boxes"></i> <strong>Stock Management</strong> - Tambah, edit, dan sesuaikan stok</li>
-                                <li><i class="fas fa-plus"></i> <strong>Tambah Item</strong> - Input item baru dengan kategori dan threshold</li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <div class="step-card">
-                        <div class="step-card-number">04</div>
-                        <div class="step-card-content">
-                            <h3>Kelola Permintaan</h3>
-                            <p>Menu <strong>Request Management</strong> untuk:</p>
-                            <ul class="feature-list">
-                                <li><i class="fas fa-check-circle"></i> <strong>Approve</strong> - Menyetujui permintaan</li>
-                                <li><i class="fas fa-times-circle"></i> <strong>Reject</strong> - Menolak dengan alasan</li>
-                                <li><i class="fas fa-truck"></i> <strong>Deliver</strong> - Menyerahkan item ke pegawai</li>
-                            </ul>
+                            <p class="tip"><i class="fas fa-plus"></i> Admin juga dapat membuat permintaan langsung via menu <strong>Buat Permintaan</strong>.</p>
                         </div>
                     </div>
 
@@ -200,10 +175,10 @@
                         <div class="step-card-content">
                             <h3>Kelola Pengguna</h3>
                             <ul class="feature-list">
-                                <li><i class="fas fa-users"></i> <strong>Kelola Pengguna</strong> - Lihat dan kelola akun pengguna</li>
-                                <li><i class="fas fa-user-plus"></i> <strong>Tambah Manual</strong> - Tambah pengguna baru secara manual</li>
-                                <li><i class="fas fa-file-import"></i> <strong>Import Pegawai</strong> - Import data dari Excel</li>
-                                <li><i class="fas fa-user-check"></i> <strong>Aktivasi</strong> - Aktifkan/nonaktifkan pengguna</li>
+                                <li><i class="fas fa-users"></i> <strong>Kelola Pengguna</strong> - Lihat seluruh akun (Nama, NIP, Jabatan, Status)</li>
+                                <li><i class="fas fa-user-plus"></i> <strong>Tambah Manual</strong> - Tambah pengguna baru dengan mengisi form</li>
+                                <li><i class="fas fa-file-import"></i> <strong>Import Pegawai</strong> - Import massal dari Excel</li>
+                                <li><i class="fas fa-toggle-on"></i> <strong>Aktifkan/Nonaktifkan</strong> - Kelola akses login pegawai</li>
                             </ul>
                         </div>
                     </div>
@@ -211,25 +186,38 @@
                     <div class="step-card">
                         <div class="step-card-number">06</div>
                         <div class="step-card-content">
-                            <h3>Backup & Keamanan</h3>
+                            <h3>Laporan & Monitoring</h3>
                             <ul class="feature-list">
-                                <li><i class="fas fa-database"></i> <strong>Cadangkan Database</strong> - Export database secara manual</li>
-                                <li><i class="fas fa-key"></i> <strong>Ganti Password</strong> - Ubah password akun</li>
+                                <li><i class="fas fa-history"></i> <strong>Riwayat Permintaan</strong> - Rekap seluruh permintaan ATK dengan status dan filter tanggal</li>
+                                <li><i class="fas fa-exchange-alt"></i> <strong>Pergerakan Stok</strong> - Histori Masuk/Keluar stok per item</li>
+                                <li><i class="fas fa-shield-alt"></i> <strong>Jejak Audit</strong> - Log lengkap aktivitas perubahan stok</li>
+                                <li><i class="fas fa-chart-bar"></i> <strong>Level Stok</strong> - Monitoring posisi stok saat ini per kategori</li>
                             </ul>
+                            <p class="tip"><i class="fas fa-file-excel"></i> Semua laporan di atas dapat diekspor ke Excel.</p>
                         </div>
                     </div>
 
                     <div class="step-card">
                         <div class="step-card-number">07</div>
                         <div class="step-card-content">
-                            <h3>Laporan & Monitoring</h3>
+                            <h3>Cetak Laporan PDF</h3>
+                            <p>Menu <strong>Cetak Laporan</strong> menghasilkan dokumen resmi berstempel untuk keperluan administrasi. Tersedia 3 jenis laporan dengan periode Bulanan, Tahunan, atau Rentang Tanggal:</p>
                             <ul class="feature-list">
-                                <li><i class="fas fa-history"></i> <strong>Riwayat Permintaan</strong> - Riwayat seluruh permintaan ATK</li>
-                                <li><i class="fas fa-exchange-alt"></i> <strong>Pergerakan Stok</strong> - Rekap stok masuk dan keluar</li>
-                                <li><i class="fas fa-shield-alt"></i> <strong>Jejak Audit</strong> - Log aktivitas seluruh sistem</li>
-                                <li><i class="fas fa-chart-bar"></i> <strong>Level Stok</strong> - Stok per kategori dan kondisi stok</li>
+                                <li><i class="fas fa-file-alt"></i> <strong>Buku Bantu Penerimaan</strong> - Rekap barang masuk (dari Import Stok)</li>
+                                <li><i class="fas fa-file-alt"></i> <strong>Buku Bantu Pengeluaran</strong> - Rekap barang keluar (dari permintaan yang diserahkan)</li>
+                                <li><i class="fas fa-file-alt"></i> <strong>Daftar Keadaan Barang</strong> - Saldo awal, masuk, keluar, dan saldo akhir per item</li>
                             </ul>
-                            <p class="tip"><i class="fas fa-file-excel"></i> Semua laporan dapat diekspor ke Excel.</p>
+                        </div>
+                    </div>
+
+                    <div class="step-card">
+                        <div class="step-card-number">08</div>
+                        <div class="step-card-content">
+                            <h3>Backup & Keamanan</h3>
+                            <ul class="feature-list">
+                                <li><i class="fas fa-database"></i> <strong>Cadangkan Database</strong> - Unduh backup database secara manual</li>
+                                <li><i class="fas fa-key"></i> <strong>Ubah Password</strong> - Perbarui password akun admin</li>
+                            </ul>
                         </div>
                     </div>
                 </div>
@@ -474,10 +462,11 @@ document.querySelectorAll('.faq-question').forEach(btn => {
     font-size: 24px;
     font-weight: 700;
     margin-bottom: 8px;
+    color: white;
 }
 
 .guide-hero-content p {
-    opacity: 0.9;
+    color: rgba(255, 255, 255, 0.9);
     font-size: 15px;
     line-height: 1.6;
 }

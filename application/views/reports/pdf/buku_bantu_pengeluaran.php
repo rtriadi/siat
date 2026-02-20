@@ -27,10 +27,10 @@ tr:nth-child(even) { background: #f5f5f5; }
             <td class="text-center"><?= $no++ ?></td>
             <td class="text-center"><?= date('d/m/Y', strtotime($row['created_at'])) ?></td>
             <td><?= htmlspecialchars($row['request_no'] ?? '-') ?></td>
-            <td><?= htmlspecialchars($row['nama'] ?? '-') ?></td>
+            <td><?= htmlspecialchars($row['pegawai_nama'] ?? '-') ?></td>
             <td><?= htmlspecialchars($row['item_name'] ?? '-') ?></td>
             <td class="text-center"><?= htmlspecialchars($row['satuan'] ?? 'Pcs') ?></td>
-            <td class="text-center"><?= (int)($row['qty_delivered'] ?? 0) ?></td>
+            <td class="text-center"><?= (int)($row['qty_delta'] ?? 0) ?></td>
             <td></td>
         </tr>
         <?php endforeach; else: ?>
