@@ -72,7 +72,7 @@ class User extends CI_Controller
         $this->form_validation->set_rules('password', 'Password', 'required|trim|min_length[4]|max_length[100]');
         $this->form_validation->set_rules('nama', 'Nama', 'required|trim|max_length[100]');
         $this->form_validation->set_rules('nip', 'NIP', 'trim|max_length[20]');
-        $this->form_validation->set_rules('unit', 'Unit', 'trim|max_length[100]');
+        $this->form_validation->set_rules('jabatan', 'Jabatan', 'trim|max_length[100]');
         $this->form_validation->set_rules('level', 'Role', 'required|integer');
 
         if ($this->form_validation->run() === false) {
@@ -84,7 +84,7 @@ class User extends CI_Controller
         $password = $this->input->post('password', true);
         $nama = trim($this->input->post('nama', true));
         $nip = trim($this->input->post('nip', true));
-        $unit = trim($this->input->post('unit', true));
+        $jabatan = trim($this->input->post('jabatan', true));
         $level = (int) $this->input->post('level', true);
 
         $data = [
@@ -92,7 +92,7 @@ class User extends CI_Controller
             'password' => password_hash($password, PASSWORD_DEFAULT),
             'nama' => $nama,
             'nip' => !empty($nip) ? $nip : null,
-            'unit' => !empty($unit) ? $unit : null,
+            'jabatan' => !empty($jabatan) ? $jabatan : null,
             'level' => $level,
             'is_active' => 1,
             'created_at' => date('Y-m-d H:i:s')
@@ -192,9 +192,9 @@ class User extends CI_Controller
             $row_number = $index;
             $nip = trim((string) ($row['A'] ?? ''));
             $nama = trim((string) ($row['B'] ?? ''));
-            $unit = trim((string) ($row['C'] ?? ''));
+            $jabatan = trim((string) ($row['C'] ?? ''));
 
-            if ($nip === '' && $nama === '' && $unit === '') {
+            if ($nip === '' && $nama === '' && $jabatan === '') {
                 continue;
             }
 
@@ -206,8 +206,8 @@ class User extends CI_Controller
             if ($nama === '') {
                 $row_errors[] = 'Nama wajib diisi.';
             }
-            if ($unit === '') {
-                $row_errors[] = 'Unit wajib diisi.';
+            if ($jabatan === '') {
+                $row_errors[] = 'Jabatan wajib diisi.';
             }
 
             if ($nip !== '') {
@@ -222,7 +222,7 @@ class User extends CI_Controller
                 'row' => $row_number,
                 'nip' => $nip,
                 'nama' => $nama,
-                'unit' => $unit,
+                'jabatan' => $jabatan,
                 'errors' => $row_errors,
             ];
         }
@@ -248,7 +248,7 @@ class User extends CI_Controller
             $valid_rows[] = [
                 'nip' => $preview_row['nip'],
                 'nama' => $preview_row['nama'],
-                'unit' => $preview_row['unit'],
+                'jabatan' => $preview_row['jabatan'],
             ];
         }
 
@@ -298,7 +298,7 @@ class User extends CI_Controller
 
         $sheet->setCellValue('A1', 'NIP');
         $sheet->setCellValue('B1', 'Nama');
-        $sheet->setCellValue('C1', 'Unit');
+        $sheet->setCellValue('C1', 'Jabatan');
 
         $writer = new XlsxWriter($spreadsheet);
 

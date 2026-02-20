@@ -24,7 +24,7 @@ defined("BASEPATH") or exit("No direct script access allowed");
 |
 */
 // Dynamic base URL detection
-$allowed_domains = array('localhost', 'localhost:8080', 'localhost:3000');
+$allowed_domains = array('localhost', 'localhost:8080', 'localhost:3000', '10.14.100.234');
 $default_domain  = 'localhost';
 
 if (isset($_SERVER['HTTP_HOST']) && in_array($_SERVER['HTTP_HOST'], $allowed_domains, TRUE)) {

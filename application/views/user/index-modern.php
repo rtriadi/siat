@@ -18,19 +18,9 @@
 </div>
 
 <div class="content">
-    <?php if ($this->session->flashdata('success')): ?>
-    <div class="alert alert-success alert-dismissible">
-        <button type="button" class="close" data-dismiss="alert">&times;</button>
-        <?= $this->session->flashdata('success') ?>
-    </div>
-    <?php endif; ?>
+    
 
-    <?php if ($this->session->flashdata('error')): ?>
-    <div class="alert alert-danger alert-dismissible">
-        <button type="button" class="close" data-dismiss="alert">&times;</button>
-        <?= $this->session->flashdata('error') ?>
-    </div>
-    <?php endif; ?>
+    
 
     <div class="card">
         <div class="data-table-header">
@@ -55,7 +45,7 @@
                         <th>Nama</th>
                         <th>Username</th>
                         <th>NIP</th>
-                        <th>Unit</th>
+                        <th>Jabatan</th>
                         <th>Role</th>
                         <th>Status</th>
                         <th>Login Terakhir</th>
@@ -86,7 +76,7 @@
                         </td>
                         <td><?= htmlspecialchars($user['username']) ?></td>
                         <td><?= !empty($user['nip']) ? htmlspecialchars($user['nip']) : '-' ?></td>
-                        <td><?= !empty($user['unit']) ? htmlspecialchars($user['unit']) : '-' ?></td>
+                        <td><?= !empty($user['jabatan']) ? htmlspecialchars($user['jabatan']) : '-' ?></td>
                         <td>
                             <span class="badge badge-<?= $user['level'] == 1 ? 'primary' : 'secondary' ?>">
                                 <?= !empty($user['nama_role']) ? htmlspecialchars($user['nama_role']) : ($user['level'] == 1 ? 'Admin' : 'Pegawai') ?>

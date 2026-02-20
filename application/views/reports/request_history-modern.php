@@ -3,7 +3,7 @@
 <div class="page-header">
     <div class="page-header-content">
         <div>
-            <h1 class="page-title">Request History</h1>
+            <h1 class="page-title">Riwayat Permintaan</h1>
             <p class="page-subtitle">Riwayat lengkap permintaan ATK</p>
         </div>
         <div>
@@ -102,7 +102,7 @@
                         <th>Tanggal</th>
                         <th>Pegawai</th>
                         <th>NIP</th>
-                        <th>Unit</th>
+                        <th>Jabatan</th>
                         <th>Status</th>
                         <th>Item</th>
                         <th class="text-center">Qty Diminta</th>
@@ -144,7 +144,7 @@
                             <td><?= date('d/m/Y H:i', strtotime($row['created_at'])) ?></td>
                             <td><?= htmlspecialchars($row['nama'] ?? '-') ?></td>
                             <td><?= htmlspecialchars($row['nip'] ?? '-') ?></td>
-                            <td><?= htmlspecialchars($row['unit'] ?? '-') ?></td>
+                            <td><?= htmlspecialchars($row['jabatan'] ?? '-') ?></td>
                             <td>
                                 <span class="status-badge <?= $status_class ?>"><?= $status_label ?></span>
                             </td>

@@ -3,7 +3,7 @@
 <div class="page-header">
     <div class="page-header-content">
         <div>
-            <h1 class="page-title">Stock Levels</h1>
+            <h1 class="page-title">Level Stok</h1>
             <p class="page-subtitle">Kondisi stok terkini per kategori</p>
         </div>
         <div>

@@ -3,7 +3,7 @@
 <div class="page-header">
     <div class="page-header-content">
         <div>
-            <h1 class="page-title">Stock Movement</h1>
+            <h1 class="page-title">Pergerakan Stok</h1>
             <p class="page-subtitle">Pergerakan stok masuk dan keluar</p>
         </div>
         <div>
@@ -120,25 +120,29 @@
                                 $type_label = 'Masuk';
                                 break;
                             case 'out':
+                            case 'reserve':
+                            case 'deliver':
                                 $type_class = 'danger';
                                 $type_label = 'Keluar';
                                 break;
-                            case 'adjust':
+                            case 'cancel':
                                 $type_class = 'warning';
+                                $type_label = 'Batal';
+                                break;
+                            case 'adjust':
+                                $type_class = 'info';
                                 $type_label = 'Penyesuaian';
                                 break;
-                            case 'reserve':
-                                $type_class = 'info';
-                                $type_label = 'Reservasi';
-                                break;
-                            case 'cancel':
-                                $type_class = 'secondary';
-                                $type_label = 'Batal Reservasi';
-                                break;
-                            case 'deliver':
-                                $type_class = 'primary';
-                                $type_label = 'Pengiriman';
-                                break;
+                            default:
+                                // Fallback: guess from reason text
+                                $reason = strtolower($row['reason'] ?? '');
+                                if (strpos($reason, 'reservasi') !== false || strpos($reason, 'pengiriman') !== false) {
+                                    $type_class = 'danger';
+                                    $type_label = 'Keluar';
+                                } else {
+                                    $type_class = 'success';
+                                    $type_label = 'Masuk';
+                                }
                         }
                         ?>
                         <tr>

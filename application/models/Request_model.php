@@ -121,6 +121,14 @@ class Request_model extends CI_Model
             ->result_array();
     }
 
+    public function count_active_requests()
+    {
+        return $this->db
+            ->where_in('status', ['pending', 'approved'])
+            ->from('request_header')
+            ->count_all_results();
+    }
+
     public function get_all($filters = [])
     {
         $this->db->from('request_header');
@@ -495,7 +503,7 @@ class Request_model extends CI_Model
                 'user.id_user',
                 'user.nama',
                 'user.nip',
-                'user.unit'
+                'user.jabatan'
             ])
             ->from('request_header')
             ->join('request_item', 'request_item.request_id = request_header.id_request', 'inner')

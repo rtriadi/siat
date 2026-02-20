@@ -27,18 +27,8 @@ $config = $status_config[$status] ?? $status_config['pending'];
 </section>
 
 <section class="page-content">
-    <?php if ($this->session->flashdata('error')): ?>
-        <div class="alert alert-danger">
-            <i class="fas fa-exclamation-circle"></i>
-            <?= $this->session->flashdata('error') ?>
-        </div>
-    <?php endif; ?>
-    <?php if ($this->session->flashdata('success')): ?>
-        <div class="alert alert-success">
-            <i class="fas fa-check-circle"></i>
-            <?= $this->session->flashdata('success') ?>
-        </div>
-    <?php endif; ?>
+    
+    
 
     <div class="detail-grid">
         <div class="card main-info">

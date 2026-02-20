@@ -3,7 +3,7 @@
 <div class="page-header">
     <div class="page-header-content">
         <div>
-            <h1 class="page-title">Request Management</h1>
+            <h1 class="page-title">Kelola Permintaan</h1>
             <p class="page-subtitle">Kelola semua permintaan ATK</p>
         </div>
         <div class="header-actions">
@@ -16,18 +16,8 @@
 </div>
 
 <div class="content">
-    <?php if ($this->session->flashdata('error')): ?>
-    <div class="alert alert-danger alert-dismissible">
-        <button type="button" class="close" data-dismiss="alert">&times;</button>
-        <?= $this->session->flashdata('error') ?>
-    </div>
-    <?php endif; ?>
-    <?php if ($this->session->flashdata('success')): ?>
-    <div class="alert alert-success alert-dismissible">
-        <button type="button" class="close" data-dismiss="alert">&times;</button>
-        <?= $this->session->flashdata('success') ?>
-    </div>
-    <?php endif; ?>
+    
+    
 
     <div class="card">
         <div class="data-table-header">

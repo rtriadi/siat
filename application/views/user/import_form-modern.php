@@ -10,18 +10,8 @@
 <section class="page-content">
     <div class="card">
         <div class="card-body">
-            <?php if ($this->session->flashdata('error')): ?>
-                <div class="alert alert-danger">
-                    <i class="fas fa-exclamation-circle"></i>
-                    <?= $this->session->flashdata('error') ?>
-                </div>
-            <?php endif; ?>
-            <?php if ($this->session->flashdata('success')): ?>
-                <div class="alert alert-success">
-                    <i class="fas fa-check-circle"></i>
-                    <?= $this->session->flashdata('success') ?>
-                </div>
-            <?php endif; ?>
+            
+            
 
             <div class="import-instructions">
                 <div class="instruction-icon">
@@ -33,7 +23,7 @@
                         <li>Unduh template Excel di bawah ini</li>
                         <li>Isi kolom <strong>NIP</strong> (Nomor Induk Pegawai)</li>
                         <li>Isi kolom <strong>Nama</strong> lengkap pegawai</li>
-                        <li>Isi kolom <strong>Unit</strong> (satker/unit kerja)</li>
+                        <li>Isi kolom <strong>Jabatan</strong> (jabatan/posisi pegawai)</li>
                         <li>Upload file yang sudah diisi</li>
                     </ol>
                 </div>

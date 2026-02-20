@@ -22,6 +22,106 @@ defined('BASEPATH') or exit('No direct script access allowed');
     <link rel="stylesheet" href="<?= base_url() ?>assets/dist/css/siat-modern.css">
     <link rel="icon" href="<?= base_url() ?>/assets/dist/img/favicon-16x16.png" type="image/gif">
     
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    
+    <!-- Select2 Theme Override - Match form input style -->
+    <style>
+        /* Select2 container */
+        .select2-container--default .select2-selection--single {
+            height: 42px !important;
+            padding: 0 12px;
+            border: 1px solid #e2e8f0 !important;
+            border-radius: 8px !important;
+            background: #ffffff !important;
+            display: flex;
+            align-items: center;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 14px;
+            color: #1e293b;
+            cursor: pointer;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            line-height: 42px !important;
+            padding-left: 0 !important;
+            padding-right: 24px !important;
+            color: #1e293b;
+            font-size: 14px;
+        }
+        .select2-container--default .select2-selection--single .select2-selection__placeholder {
+            color: #94a3b8;
+        }
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 42px !important;
+            right: 10px !important;
+            top: 0 !important;
+        }
+        .select2-container--default .select2-selection--single .select2-selection__arrow b {
+            border-color: #64748b transparent transparent transparent;
+        }
+        /* Focus state */
+        .select2-container--default.select2-container--open .select2-selection--single,
+        .select2-container--default.select2-container--focus .select2-selection--single {
+            border-color: #3b82f6 !important;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15) !important;
+            outline: none;
+        }
+        .select2-container--default.select2-container--open .select2-selection--single .select2-selection__arrow b {
+            border-color: transparent transparent #3b82f6 transparent !important;
+        }
+        /* Dropdown container */
+        .select2-container--default .select2-dropdown {
+            border: 1px solid #e2e8f0 !important;
+            border-radius: 8px !important;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1) !important;
+            overflow: hidden;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        /* Search box */
+        .select2-container--default .select2-search--dropdown .select2-search__field {
+            border: 1px solid #e2e8f0 !important;
+            border-radius: 6px !important;
+            padding: 8px 12px !important;
+            font-size: 13px !important;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: #1e293b;
+            margin: 6px !important;
+            width: calc(100% - 12px) !important;
+        }
+        .select2-container--default .select2-search--dropdown .select2-search__field:focus {
+            border-color: #3b82f6 !important;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(59,130,246,0.15);
+        }
+        /* Options */
+        .select2-container--default .select2-results__option {
+            padding: 9px 14px !important;
+            font-size: 14px !important;
+            color: #374151;
+            cursor: pointer;
+        }
+        .select2-container--default .select2-results__option--highlighted[aria-selected] {
+            background-color: #eff6ff !important;
+            color: #1d4ed8 !important;
+        }
+        .select2-container--default .select2-results__option[aria-selected=true] {
+            background-color: #dbeafe !important;
+            color: #1d4ed8 !important;
+            font-weight: 500;
+        }
+        .select2-results__message {
+            color: #94a3b8;
+            font-size: 13px;
+            padding: 10px 14px;
+        }
+        /* Full width */
+        .select2-container {
+            width: 100% !important;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    
     <style>
         :root {
             --primary: #1e293b;
@@ -849,10 +949,20 @@ defined('BASEPATH') or exit('No direct script access allowed');
     
     <?php
     $unread_notifications = 0;
-    $user_id = (int) $this->session->userdata('id_user');
+    $active_requests_count = 0;
+    
+    $ci =& get_instance();
+    $user_id = (int) $ci->session->userdata('id_user');
+    $user_level = (int) $ci->session->userdata('level');
+    
     if ($user_id > 0) {
-        $this->load->model('Notification_model');
-        $unread_notifications = $this->Notification_model->count_unread($user_id);
+        $ci->load->model('Notification_model');
+        $unread_notifications = $ci->Notification_model->count_unread($user_id);
+        
+        if ($user_level === 1) {
+            $ci->load->model('Request_model');
+            $active_requests_count = $ci->Request_model->count_active_requests();
+        }
     }
     ?>
     
@@ -968,8 +1078,47 @@ defined('BASEPATH') or exit('No direct script access allowed');
     <!-- Scripts -->
     <script src="<?= base_url() ?>assets/plugins/jquery/jquery.min.js"></script>
     <script src="<?= base_url() ?>assets/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     
     <script>
+        // Toastr Configuration
+        toastr.options = {
+            "closeButton": true,
+            "progressBar": true,
+            "positionClass": "toast-top-right",
+            "timeOut": "4000"
+        };
+
+        <?php if ($ci->session->flashdata('success')): ?>
+            toastr.success('<?= str_replace("'", "\\'", strip_tags($ci->session->flashdata('success'))) ?>');
+        <?php endif; ?>
+
+        <?php if ($ci->session->flashdata('error') || $ci->session->flashdata('danger') || isset($error)): ?>
+            toastr.error('<?= str_replace("'", "\\'", strip_tags($ci->session->flashdata('error') ?? $ci->session->flashdata('danger') ?? ($error ?? ''))) ?>');
+        <?php endif; ?>
+
+        <?php if ($ci->session->flashdata('warning')): ?>
+            toastr.warning('<?= str_replace("'", "\\'", strip_tags($ci->session->flashdata('warning'))) ?>');
+        <?php endif; ?>
+
+        <?php if ($ci->session->flashdata('info')): ?>
+            toastr.info('<?= str_replace("'", "\\'", strip_tags($ci->session->flashdata('info'))) ?>');
+        <?php endif; ?>
+
+        // Global Select2 initialization
+        $(function() {
+            $('select:not(.no-select2)').select2({
+                width: '100%',
+                placeholder: function() { return $(this).data('placeholder') || '-- Pilih --'; },
+                allowClear: false,
+                language: {
+                    noResults: function() { return 'Tidak ada hasil'; },
+                    searching: function() { return 'Mencari...'; }
+                }
+            });
+        });
+        
         // Sidebar Toggle
         const menuToggle = document.getElementById('menuToggle');
         const sidebar = document.getElementById('sidebar');

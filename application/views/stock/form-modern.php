@@ -13,12 +13,7 @@
 <section class="page-content">
     <div class="card">
         <div class="card-body">
-            <?php if ($this->session->flashdata('error')): ?>
-                <div class="alert alert-danger">
-                    <i class="fas fa-exclamation-circle"></i>
-                    <?= $this->session->flashdata('error') ?>
-                </div>
-            <?php endif; ?>
+            
 
             <form action="<?= site_url($is_edit ? 'stock/update/' . $item['id_item'] : 'stock/store') ?>" method="post" class="modern-form">
                 <div class="form-row">

@@ -7,7 +7,7 @@ class User_model extends CI_Model
     public function get_by_username($username)
     {
         return $this->db
-            ->select('id_user, username, password, nama, nip, unit, level, is_active, must_change_password')
+            ->select('id_user, username, password, nama, nip, jabatan, level, is_active, must_change_password')
             ->get_where('user', array('username' => $username))
             ->row_array();
     }
@@ -90,7 +90,7 @@ class User_model extends CI_Model
                 'password' => password_hash($nip, PASSWORD_DEFAULT),
                 'nama' => $row['nama'],
                 'nip' => $nip,
-                'unit' => $row['unit'],
+                'jabatan' => $row['jabatan'],
                 'level' => 2,
                 'must_change_password' => 1,
                 'is_active' => 1,
@@ -188,7 +188,7 @@ class User_model extends CI_Model
             'password' => $data['password'],
             'nama' => $data['nama'],
             'nip' => !empty($data['nip']) ? $data['nip'] : null,
-            'unit' => !empty($data['unit']) ? $data['unit'] : null,
+            'jabatan' => !empty($data['jabatan']) ? $data['jabatan'] : null,
             'level' => isset($data['level']) ? (int) $data['level'] : 2,
             'is_active' => isset($data['is_active']) ? (int) $data['is_active'] : 1,
             'must_change_password' => 1,
@@ -226,7 +226,7 @@ class User_model extends CI_Model
             $this->db->like('user.nama', $search);
             $this->db->or_like('user.username', $search);
             $this->db->or_like('user.nip', $search);
-            $this->db->or_like('user.unit', $search);
+            $this->db->or_like('user.jabatan', $search);
             $this->db->group_end();
         }
 

@@ -8,12 +8,7 @@
 </div>
 
 <div class="content">
-    <?php if ($this->session->flashdata('error')): ?>
-    <div class="alert alert-danger alert-dismissible">
-        <button type="button" class="close" data-dismiss="alert">&times;</button>
-        <?= $this->session->flashdata('error') ?>
-    </div>
-    <?php endif; ?>
+    
 
     <div class="card">
         <div class="card-body">
@@ -27,7 +22,7 @@
                                 <option value="">-- Pilih Karyawan --</option>
                                 <?php foreach ($employees as $emp): ?>
                                 <option value="<?= $emp['id_user'] ?>">
-                                    <?= htmlspecialchars($emp['nama']) ?> (<?= htmlspecialchars($emp['nip']) ?>) - <?= htmlspecialchars($emp['unit']) ?>
+                                    <?= htmlspecialchars($emp['nama']) ?> (<?= htmlspecialchars($emp['nip']) ?>) - <?= htmlspecialchars($emp['jabatan']) ?>
                                 </option>
                                 <?php endforeach; ?>
                             </select>
@@ -204,12 +199,9 @@ function filterItems() {
 .filter-box { min-width: 180px; }
 .filter-box .form-control { cursor: pointer; }
 
-.items-grid { display: flex; flex-direction: column; gap: 12px; max-height: 500px; overflow-y: auto; padding-right: 8px; }
-.items-grid::-webkit-scrollbar { width: 6px; }
-.items-grid::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 3px; }
-.items-grid::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 3px; }
+.items-grid { display: flex; flex-direction: column; gap: 12px; padding-right: 8px; }
 
-.item-category { border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; }
+.item-category { border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; flex-shrink: 0; }
 .category-header { background: #f9fafb; padding: 12px 16px; font-weight: 600; color: #374151; display: flex; align-items: center; gap: 8px; }
 .category-header i { color: #f59e0b; }
 .item-count { margin-left: auto; font-size: 12px; color: #6b7280; font-weight: normal; }

@@ -38,6 +38,13 @@ class Stock_import extends CI_Controller
 
     public function import_preview()
     {
+        $purchase_date = $this->input->post('purchase_date');
+        if (empty($purchase_date)) {
+            $this->session->set_flashdata('error', 'Tanggal Pembelian wajib diisi.');
+            redirect('stock_import/import');
+        }
+        $this->session->set_userdata('import_purchase_date', $purchase_date);
+
         $this->load->library('upload', $this->upload_config());
 
         if (!$this->upload->do_upload('import_file')) {
@@ -185,6 +192,7 @@ class Stock_import extends CI_Controller
     public function import_commit()
     {
         $rows = $this->session->userdata(self::IMPORT_SESSION_KEY);
+        $purchase_date = $this->session->userdata('import_purchase_date');
 
         if (empty($rows)) {
             $this->session->set_flashdata('error', 'Tidak ada data import yang tersimpan.');
@@ -207,11 +215,14 @@ class Stock_import extends CI_Controller
                 $result = $this->stock_model->create_item([
                     'category_id' => $row['category_id'],
                     'item_name' => $row['item_name'],
-                    'available_qty' => $row['qty'],
+                    'available_qty' => 0,
                     'low_stock_threshold' => $row['min_stock']
                 ]);
 
                 if ($result['success']) {
+                    $user_id = $this->session->userdata('id_user');
+                    $this->stock_model->adjust_stock($result['id'], 'in', $row['qty'], 'Import stok awal', $user_id, $purchase_date);
+
                     $success_count++;
                     $created_count++;
                 } else {
@@ -222,7 +233,7 @@ class Stock_import extends CI_Controller
                 $item = $row['existing_item'];
                 $user_id = $this->session->userdata('id_user');
                 
-                $result = $this->stock_model->adjust_stock($item['id_item'], 'in', $row['qty'], 'Import stok', $user_id);
+                $result = $this->stock_model->adjust_stock($item['id_item'], 'in', $row['qty'], 'Import stok', $user_id, $purchase_date);
 
                 if ($result['success']) {
                     $success_count++;
@@ -235,6 +246,7 @@ class Stock_import extends CI_Controller
         }
 
         $this->session->unset_userdata(self::IMPORT_SESSION_KEY);
+        $this->session->unset_userdata('import_purchase_date');
         
         $msg = "Import selesai! ";
         if ($created_count > 0) {

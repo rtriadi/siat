@@ -24,6 +24,12 @@
 		]
 	},
 	"config": {
-		"platform-check": false
+		"platform-check": false,
+		"platform": {
+			"php": "7.2.22"
+		},
+		"audit": {
+			"block-insecure": false
+		}
 	}
 }

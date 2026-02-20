@@ -12,18 +12,8 @@
 <section class="page-content">
     <div class="card">
         <div class="card-body">
-            <?php if ($this->session->flashdata('error')): ?>
-                <div class="alert alert-danger">
-                    <i class="fas fa-exclamation-circle"></i>
-                    <?= $this->session->flashdata('error') ?>
-                </div>
-            <?php endif; ?>
-            <?php if ($this->session->flashdata('success')): ?>
-                <div class="alert alert-success">
-                    <i class="fas fa-check-circle"></i>
-                    <?= $this->session->flashdata('success') ?>
-                </div>
-            <?php endif; ?>
+            
+            
 
             <div class="import-instructions">
                 <div class="instruction-icon">
@@ -72,6 +62,15 @@
                     <button type="button" class="remove-file" id="removeFile">
                         <i class="fas fa-times"></i>
                     </button>
+                </div>
+                
+                <div class="form-group" style="margin-top: 20px; max-width: 320px;">
+                    <label for="purchase_date" class="form-label">
+                        Tanggal Pembelian <span style="color:#ef4444;">*</span>
+                    </label>
+                    <input type="date" name="purchase_date" id="purchase_date" class="form-control"
+                           value="<?= date('Y-m-d') ?>" required>
+                    <span class="input-info">Tanggal saat barang dibeli/diterima</span>
                 </div>
                 
                 <div class="form-actions">

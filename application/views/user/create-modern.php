@@ -8,12 +8,7 @@
 </div>
 
 <div class="content">
-    <?php if ($this->session->flashdata('error')): ?>
-    <div class="alert alert-danger alert-dismissible">
-        <button type="button" class="close" data-dismiss="alert">&times;</button>
-        <?= $this->session->flashdata('error') ?>
-    </div>
-    <?php endif; ?>
+    
 
     <div class="card">
         <div class="card-body">
@@ -44,9 +39,9 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="unit" class="form-label">Unit</label>
-                        <input type="text" class="form-control" id="unit" name="unit" 
-                               placeholder="Masukkan unit (opsional)">
+                        <label for="jabatan" class="form-label">Jabatan</label>
+                        <input type="text" class="form-control" id="jabatan" name="jabatan" 
+                               placeholder="Masukkan jabatan (opsional)">
                     </div>
 
                     <div class="form-group">

@@ -78,7 +78,7 @@ class Reports extends CI_Controller
             'Tanggal',
             'Pegawai',
             'NIP',
-            'Unit',
+            'Jabatan',
             'Status',
             'Item',
             'Qty Diminta',
@@ -97,7 +97,7 @@ class Reports extends CI_Controller
             $sheet->setCellValueByColumnAndRow(2, $row_num, $row['created_at']);
             $sheet->setCellValueByColumnAndRow(3, $row_num, $row['nama'] ?? '-');
             $sheet->setCellValueByColumnAndRow(4, $row_num, $row['nip'] ?? '-');
-            $sheet->setCellValueByColumnAndRow(5, $row_num, $row['unit'] ?? '-');
+            $sheet->setCellValueByColumnAndRow(5, $row_num, $row['jabatan'] ?? '-');
             $sheet->setCellValueByColumnAndRow(6, $row_num, $this->translate_status($row['status']));
             $sheet->setCellValueByColumnAndRow(7, $row_num, $row['item_name'] ?? '-');
             $sheet->setCellValueByColumnAndRow(8, $row_num, $row['qty_requested']);

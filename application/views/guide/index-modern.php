@@ -138,7 +138,7 @@
                             <ul class="feature-list">
                                 <li><i class="fas fa-folder"></i> <strong>Kelola Kategori</strong> - Buat kategori item ATK</li>
                                 <li><i class="fas fa-users"></i> <strong>Import Pegawai</strong> - Data karyawan dari Excel</li>
-                                <li><i class="fas fa-box"></i> <strong>Import Stock</strong> - Data inventori ATK awal</li>
+                                <li><i class="fas fa-box"></i> <strong>Import Stok</strong> - Data inventori ATK awal</li>
                             </ul>
                             <p class="tip"><i class="fas fa-lightbulb"></i> Ikuti format template Excel yang disediakan.</p>
                         </div>
@@ -150,7 +150,7 @@
                             <h3>Kelola Kategori & Stok</h3>
                             <ul class="feature-list">
                                 <li><i class="fas fa-folder"></i> <strong>Kelola Kategori</strong> - Buat dan manage kategori item</li>
-                                <li><i class="fas fa-boxes"></i> <strong>Stock Management</strong> - Tambah, edit, dan sesuaikan stok</li>
+                                <li><i class="fas fa-boxes"></i> <strong>Kelola Stok</strong> - Tambah, edit, dan sesuaikan stok</li>
                                 <li><i class="fas fa-plus"></i> <strong>Tambah Item</strong> - Input item baru dengan kategori dan threshold</li>
                             </ul>
                         </div>
@@ -160,7 +160,7 @@
                         <div class="step-card-number">04</div>
                         <div class="step-card-content">
                             <h3>Kelola Permintaan</h3>
-                            <p>Menu <strong>Request Management</strong> untuk:</p>
+                            <p>Menu <strong>Kelola Permintaan</strong> untuk:</p>
                             <ul class="feature-list">
                                 <li><i class="fas fa-check-circle"></i> <strong>Approve</strong> - Menyetetujui permintaan</li>
                                 <li><i class="fas fa-times-circle"></i> <strong>Reject</strong> - Menolak dengan alasan</li>
@@ -213,7 +213,7 @@
                         <div class="step-card-content">
                             <h3>Backup & Keamanan</h3>
                             <ul class="feature-list">
-                                <li><i class="fas fa-database"></i> <strong>Backup Database</strong> - Export database secara manual</li>
+                                <li><i class="fas fa-database"></i> <strong>Cadangkan Database</strong> - Export database secara manual</li>
                                 <li><i class="fas fa-key"></i> <strong>Ganti Password</strong> - Ubah password akun</li>
                             </ul>
                         </div>
@@ -224,10 +224,10 @@
                         <div class="step-card-content">
                             <h3>Laporan & Monitoring</h3>
                             <ul class="feature-list">
-                                <li><i class="fas fa-history"></i> <strong>Request History</strong> - Riwayat permintaan</li>
-                                <li><i class="fas fa-exchange-alt"></i> <strong>Stock Movement</strong> - Pergerakan stok</li>
-                                <li><i class="fas fa-shield-alt"></i> <strong>Audit Trail</strong> - Log aktivitas sistem</li>
-                                <li><i class="fas fa-chart-bar"></i> <strong>Stock Levels</strong> - Stok per kategori</li>
+                                <li><i class="fas fa-history"></i> <strong>Riwayat Permintaan</strong> - Riwayat seluruh permintaan ATK</li>
+                                <li><i class="fas fa-exchange-alt"></i> <strong>Pergerakan Stok</strong> - Rekap stok masuk dan keluar</li>
+                                <li><i class="fas fa-shield-alt"></i> <strong>Jejak Audit</strong> - Log aktivitas seluruh sistem</li>
+                                <li><i class="fas fa-chart-bar"></i> <strong>Level Stok</strong> - Stok per kategori dan kondisi stok</li>
                             </ul>
                             <p class="tip"><i class="fas fa-file-excel"></i> Semua laporan dapat diekspor ke Excel.</p>
                         </div>

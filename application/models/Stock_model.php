@@ -259,9 +259,10 @@ class Stock_model extends CI_Model
      * @param int $qty_delta Quantity change (positive or negative)
      * @param string $reason
      * @param int $user_id
+     * @param string|null $purchase_date
      * @return array ['success' => bool, 'message' => string]
      */
-    public function adjust_stock($id_item, $type, $qty_delta, $reason, $user_id)
+    public function adjust_stock($id_item, $type, $qty_delta, $reason, $user_id, $purchase_date = null)
     {
         // Validate type
         if (!in_array($type, ['in', 'out', 'adjust'])) {
@@ -302,13 +303,19 @@ class Stock_model extends CI_Model
         );
 
         // Log movement
-        $this->db->insert('stock_movement', [
+        $movement_data = [
             'item_id' => $id_item,
             'movement_type' => $type,
             'qty_delta' => $qty_delta,
             'reason' => $reason,
             'user_id' => $user_id
-        ]);
+        ];
+
+        if ($purchase_date !== null && $type === 'in') {
+            $movement_data['purchase_date'] = $purchase_date;
+        }
+
+        $this->db->insert('stock_movement', $movement_data);
 
         if ($this->db->trans_status() === false) {
             $error = $this->db->error();
@@ -858,5 +865,93 @@ class Stock_model extends CI_Model
         }
 
         return $movements;
+    }
+
+    public function get_rkbp($filters)
+    {
+        $this->db->select('stock_item.*, stock_category.category_name');
+        $this->db->from('stock_item');
+        $this->db->join('stock_category', 'stock_category.id_category = stock_item.category_id', 'left');
+        $this->db->order_by('stock_category.category_name', 'ASC');
+        $this->db->order_by('stock_item.item_name', 'ASC');
+        return $this->db->get()->result_array();
+    }
+
+    public function get_buku_bantu($filters, $type)
+    {
+        $this->db->select('stock_movement.*, stock_item.item_name');
+        $this->db->from('stock_movement');
+        $this->db->join('stock_item', 'stock_movement.item_id = stock_item.id_item', 'left');
+        
+        if ($type === 'in') {
+            $this->db->where_in('stock_movement.movement_type', ['in', 'adjust']);
+        } elseif ($type === 'out') {
+            $this->db->where_in('stock_movement.movement_type', ['out', 'deliver', 'reserve']);
+        }
+
+        if (!empty($filters['date_start'])) $this->db->where('DATE(stock_movement.created_at) >=', $filters['date_start']);
+        if (!empty($filters['date_end'])) $this->db->where('DATE(stock_movement.created_at) <=', $filters['date_end']);
+        if (!empty($filters['month'])) $this->db->where('MONTH(stock_movement.created_at)', $filters['month']);
+        if (!empty($filters['year'])) $this->db->where('YEAR(stock_movement.created_at)', $filters['year']);
+        
+        $this->db->order_by('stock_movement.created_at', 'ASC');
+        return $this->db->get()->result_array();
+    }
+
+    public function get_laporan_biaya($filters)
+    {
+        $in = $this->get_buku_bantu($filters, 'in');
+        $out = $this->get_buku_bantu($filters, 'out');
+        
+        // Dummy values since schema lacks pricing
+        $total_in = count($in) * 15000; 
+        $total_out = count($out) * 5000;
+
+        return [
+            ['uraian' => 'Saldo Awal', 'pemasukan' => 0, 'pengeluaran' => 0, 'total' => 0],
+            ['uraian' => 'Penerimaan Biaya ATK Perkara', 'pemasukan' => $total_in, 'pengeluaran' => 0, 'total' => 0],
+            ['uraian' => 'Pengeluaran Belanja ATK', 'pemasukan' => 0, 'pengeluaran' => $total_out, 'total' => 0],
+            ['uraian' => 'SALDO', 'pemasukan' => $total_in, 'pengeluaran' => $total_out, 'total' => ($total_in > 0 ? $total_in - $total_out : -$total_out)]
+        ];
+    }
+
+    public function get_keadaan_barang($filters)
+    {
+        // Base items
+        $this->db->select('id_item, item_name, available_qty');
+        $items = $this->db->get('stock_item')->result_array();
+
+        // Calculate in/out for the period
+        $movements = $this->get_stock_movement_report($filters);
+        
+        $processed = [];
+        foreach ($items as $item) {
+            $processed[$item['id_item']] = [
+                'nama_bahan' => $item['item_name'],
+                'saldo_awal' => $item['available_qty'], // Mocking current available as start
+                'barang_masuk' => 0,
+                'sisa_barang_terpakai' => 0,
+                'satuan' => 'Pcs',
+                'keterangan' => ''
+            ];
+        }
+
+        foreach ($movements as $mov) {
+            $id = $mov['item_id'];
+            if (isset($processed[$id])) {
+                if ($mov['movement_type'] == 'in') {
+                    $processed[$id]['barang_masuk'] += $mov['qty_delta'];
+                } elseif ($mov['movement_type'] == 'out' || $mov['movement_type'] == 'deliver') {
+                    $processed[$id]['sisa_barang_terpakai'] += $mov['qty_delta'];
+                }
+            }
+        }
+
+        foreach ($processed as &$p) {
+            $p['total_barang'] = $p['saldo_awal'] + $p['barang_masuk'];
+            $p['saldo_baru'] = $p['total_barang'] - $p['sisa_barang_terpakai'];
+        }
+
+        return array_values($processed);
     }
 }

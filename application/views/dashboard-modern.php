@@ -18,7 +18,13 @@ $level = $level ?? 'admin';
                 </h1>
                 <p class="page-subtitle">
                     Selamat datang, <strong><?= htmlspecialchars($user_name ?? 'User') ?></strong>! 
-                    <?= date('l, d F Y') ?>
+                    <?php 
+                    $hari_id = ['Sunday'=>'Minggu','Monday'=>'Senin','Tuesday'=>'Selasa','Wednesday'=>'Rabu','Thursday'=>'Kamis','Friday'=>'Jumat','Saturday'=>'Sabtu'];
+                    $bulan_id = ['January'=>'Januari','February'=>'Februari','March'=>'Maret','April'=>'April','May'=>'Mei','June'=>'Juni','July'=>'Juli','August'=>'Agustus','September'=>'September','October'=>'Oktober','November'=>'November','December'=>'Desember'];
+                    $hari = $hari_id[date('l')] ?? date('l');
+                    $bulan = $bulan_id[date('F')] ?? date('F');
+                    echo $hari . ', ' . date('d') . ' ' . $bulan . ' ' . date('Y');
+                    ?>
                 </p>
             </div>
         </div>
@@ -35,7 +41,7 @@ $level = $level ?? 'admin';
             <div class="stat-content">
                 <div class="stat-icon"><i class="fas fa-boxes"></i></div>
                 <div class="stat-info">
-                    <span class="stat-label">Total Items</span>
+                    <span class="stat-label">Total Jenis Barang</span>
                     <span class="stat-value"><?= number_format($total_items ?? 0) ?></span>
                     <span class="stat-sub"><?= number_format($total_stock ?? 0) ?> unit tersedia</span>
                 </div>
@@ -103,7 +109,7 @@ $level = $level ?? 'admin';
                         <div class="qa-icon" style="background: linear-gradient(135deg, #10b981, #059669);">
                             <i class="fas fa-file-import"></i>
                         </div>
-                        <span>Import Stock</span>
+                        <span>Import Stok</span>
                     </a>
                     <a href="<?= site_url('request_admin') ?>" class="quick-action">
                         <div class="qa-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
@@ -143,9 +149,9 @@ $level = $level ?? 'admin';
                         </div>
                         <div class="request-info">
                             <span class="request-name"><?= htmlspecialchars($req['user_name'] ?? 'User') ?></span>
-                            <span class="request-item-name"><?= htmlspecialchars($req['item_name'] ?? 'Item') ?></span>
+                                <span class="request-item-name"><?= htmlspecialchars($req['item_names'] ?? 'Item') ?> — No. <?= $req['request_no'] ?></span>
                         </div>
-                        <div class="request-qty">x<?= $req['quantity'] ?? 0 ?></div>
+                        <div class="request-qty">x<?= $req['total_qty'] ?? 0 ?></div>
                         <span class="request-status status-<?= $req['status'] ?>">
                             <?php 
                             $status_text = [
@@ -293,10 +299,10 @@ $level = $level ?? 'admin';
                             <i class="fas fa-box"></i>
                         </div>
                         <div class="request-info">
-                            <span class="request-name"><?= htmlspecialchars($req['item_name'] ?? 'Item') ?></span>
-                            <span class="request-item-name"><?= date('d M Y, H:i', strtotime($req['created_at'])) ?></span>
+                            <span class="request-name"><?= htmlspecialchars($req['item_names'] ?? 'Item') ?></span>
+                                <span class="request-item-name"><?= date('d M Y, H:i', strtotime($req['created_at'])) ?> — No. <?= $req['request_no'] ?></span>
                         </div>
-                        <div class="request-qty">x<?= $req['quantity'] ?? 0 ?></div>
+                        <div class="request-qty">x<?= $req['total_qty'] ?? 0 ?></div>
                         <span class="request-status status-<?= $req['status'] ?>">
                             <?php 
                             $status_text = [

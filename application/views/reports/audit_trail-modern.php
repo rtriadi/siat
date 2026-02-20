@@ -3,7 +3,7 @@
 <div class="page-header">
     <div class="page-header-content">
         <div>
-            <h1 class="page-title">Audit Trail</h1>
+            <h1 class="page-title">Jejak Audit</h1>
             <p class="page-subtitle">Log lengkap semua aktivitas perubahan stok</p>
         </div>
     </div>

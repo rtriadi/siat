@@ -18,7 +18,7 @@
             <li class="nav-item">
                 <a href="<?= site_url('stock') ?>" class="nav-link <?= $page == 'Stock Management' || $page == 'Tambah Item' || $page == 'Edit Item' ? 'active' : '' ?>">
                     <i class="nav-icon fas fa-boxes"></i>
-                    <span>Stock Management</span>
+                    <span>Kelola Stok</span>
                 </a>
             </li>
             <li class="nav-item">
@@ -48,9 +48,9 @@
             <li class="nav-item">
                 <a href="<?= site_url('request_admin') ?>" class="nav-link <?= $page == 'Request Management' || $page == 'Detail Permintaan' || $page == 'Approve Permintaan' || $page == 'Deliver Permintaan' ? 'active' : '' ?>">
                     <i class="nav-icon fas fa-clipboard-list"></i>
-                    <span>Request Management</span>
-                    <?php if (!empty($unread_notifications) && (int) $unread_notifications > 0): ?>
-                        <span class="nav-badge"><?= (int) $unread_notifications ?></span>
+                    <span>Kelola Permintaan</span>
+                    <?php if (isset($active_requests_count) && (int) $active_requests_count > 0): ?>
+                        <span class="nav-badge"><?= (int) $active_requests_count ?></span>
                     <?php endif; ?>
                 </a>
             </li>
@@ -63,7 +63,7 @@
             <li class="nav-item">
                 <a href="<?= site_url('notification') ?>" class="nav-link <?= $page == 'Notifications' ? 'active' : '' ?>">
                     <i class="nav-icon fas fa-bell"></i>
-                    <span>Notifications</span>
+                    <span>Notifikasi</span>
                     <?php if (!empty($unread_notifications) && (int) $unread_notifications > 0): ?>
                         <span class="nav-badge"><?= (int) $unread_notifications ?></span>
                     <?php endif; ?>
@@ -78,31 +78,37 @@
             <li class="nav-item">
                 <a href="<?= site_url('reports/request_history') ?>" class="nav-link <?= $page == 'Request History' ? 'active' : '' ?>">
                     <i class="nav-icon fas fa-history"></i>
-                    <span>Request History</span>
+                    <span>Riwayat Permintaan</span>
                 </a>
             </li>
             <li class="nav-item">
                 <a href="<?= site_url('reports/stock_movement') ?>" class="nav-link <?= $page == 'Stock Movement' ? 'active' : '' ?>">
                     <i class="nav-icon fas fa-exchange-alt"></i>
-                    <span>Stock Movement</span>
+                    <span>Pergerakan Stok</span>
                 </a>
             </li>
             <li class="nav-item">
                 <a href="<?= site_url('reports/audit_trail') ?>" class="nav-link <?= $page == 'Audit Trail' ? 'active' : '' ?>">
                     <i class="nav-icon fas fa-shield-alt"></i>
-                    <span>Audit Trail</span>
+                    <span>Jejak Audit</span>
                 </a>
             </li>
             <li class="nav-item">
                 <a href="<?= site_url('reports/stock_levels') ?>" class="nav-link <?= $page == 'Stock Levels' ? 'active' : '' ?>">
                     <i class="nav-icon fas fa-chart-bar"></i>
-                    <span>Stock Levels</span>
+                    <span>Level Stok</span>
                 </a>
             </li>
             <li class="nav-item">
                 <a href="<?= site_url('backup') ?>" class="nav-link <?= $page == 'Backup Database' ? 'active' : '' ?>">
                     <i class="nav-icon fas fa-database"></i>
-                    <span>Backup Database</span>
+                    <span>Cadangkan Database</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="<?= site_url('report_pdf') ?>" class="nav-link <?= $page == 'Cetak Laporan' ? 'active' : '' ?>">
+                    <i class="nav-icon fas fa-print"></i>
+                    <span>Cetak Laporan PDF</span>
                 </a>
             </li>
         </ul>
@@ -134,7 +140,7 @@
             <li class="nav-item">
                 <a href="<?= site_url('notification') ?>" class="nav-link <?= $page == 'Notifications' ? 'active' : '' ?>">
                     <i class="nav-icon fas fa-bell"></i>
-                    <span>Notifications</span>
+                    <span>Notifikasi</span>
                     <?php if (!empty($unread_notifications) && (int) $unread_notifications > 0): ?>
                         <span class="nav-badge"><?= (int) $unread_notifications ?></span>
                     <?php endif; ?>

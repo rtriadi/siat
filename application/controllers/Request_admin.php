@@ -63,7 +63,7 @@ class Request_admin extends CI_Controller
         $this->load->model('Stock_model');
         
         $employees = $this->db
-            ->select('id_user, nama, nip, unit')
+            ->select('id_user, nama, nip, jabatan')
             ->from('user')
             ->where('level', 2)
             ->where('is_active', 1)

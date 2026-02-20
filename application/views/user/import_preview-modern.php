@@ -38,7 +38,7 @@
                             <th>Baris</th>
                             <th>NIP</th>
                             <th>Nama</th>
-                            <th>Unit</th>
+                            <th>Jabatan</th>
                             <th>Status</th>
                         </tr>
                     </thead>
@@ -48,7 +48,7 @@
                                 <td><?= (int) $row['row'] ?></td>
                                 <td><?= htmlspecialchars($row['nip'], ENT_QUOTES, 'UTF-8') ?></td>
                                 <td><?= htmlspecialchars($row['nama'], ENT_QUOTES, 'UTF-8') ?></td>
-                                <td><?= htmlspecialchars($row['unit'], ENT_QUOTES, 'UTF-8') ?></td>
+                                <td><?= htmlspecialchars($row['jabatan'], ENT_QUOTES, 'UTF-8') ?></td>
                                 <td>
                                     <?php if (!empty($row['errors'])): ?>
                                         <span class="badge badge-danger">
