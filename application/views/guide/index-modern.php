@@ -133,14 +133,13 @@
                     <div class="step-card">
                         <div class="step-card-number">02</div>
                         <div class="step-card-content">
-                            <h3>Setup Awal</h3>
-                            <p>Sebelum operasional, lakukan setup berikut:</p>
+                            <h3>Setup Awal & Pergantian Tahun</h3>
+                            <p>Sebelum operasional atau saat pergantian tahun, perhatikan hal berikut:</p>
                             <ul class="feature-list">
-                                <li><i class="fas fa-folder"></i> <strong>Kelola Kategori</strong> - Buat kategori item ATK (Kertas, Tinta, dll)</li>
-                                <li><i class="fas fa-users"></i> <strong>Import Pegawai</strong> - Daftarkan pegawai dari Excel (kolom: Nama, Username, NIP, Jabatan)</li>
-                                <li><i class="fas fa-file-import"></i> <strong>Import Stok</strong> - Upload data stok awal dari Excel. <strong>Wajib isi Tanggal Pembelian</strong> agar tercatat di Buku Bantu Penerimaan.</li>
+                                <li><i class="fas fa-calendar-alt"></i> <strong>Pilih Tahun Login</strong> - Saat login, pastikan Anda memilih tahun yang tepat. Seluruh data transaksi akan difilter berdasarkan tahun ini.</li>
+                                <li><i class="fas fa-file-import"></i> <strong>Import Stok & Saldo Awal</strong> - Untuk sistem baru, gunakan Import Stok. Untuk tahun berikutnya, Anda <strong>wajib</strong> menekan tombol <strong>Tarik Data Stok Sisa Tahun Sebelumnya</strong> di halaman Import Stok agar sisa stok tahun lalu pindah ke tahun ini.</li>
                             </ul>
-                            <p class="tip"><i class="fas fa-lightbulb"></i> Download template Excel yang tersedia di halaman masing-masing menu.</p>
+                            <p class="tip"><i class="fas fa-lightbulb"></i> Fitur "Tarik Data" hanya akan muncul jika Anda sudah menutup periode tahun sebelumnya.</p>
                         </div>
                     </div>
 
@@ -151,8 +150,9 @@
                             <ul class="feature-list">
                                 <li><i class="fas fa-folder"></i> <strong>Kelola Kategori</strong> - Tambah dan kelola kategori item</li>
                                 <li><i class="fas fa-boxes"></i> <strong>Kelola Stok</strong> - Lihat, tambah, edit, hapus, dan sesuaikan stok barang</li>
-                                <li><i class="fas fa-sliders-h"></i> <strong>Penyesuaian Stok</strong> - Koreksi stok jika ada selisih fisik gudang</li>
+                                <li><i class="fas fa-lock"></i> <strong>Tutup Periode</strong> - Mengunci seluruh pergerakan stok (tambah/edit/import) di tahun tersebut secara permanen. Dilakukan pada akhir tahun (31 Desember) agar sisa stok siap ditarik ke tahun berikutnya.</li>
                             </ul>
+                            <p class="tip"><i class="fas fa-search"></i> Pencarian tabel sudah mendukung <b>Real-Time Search</b>. Anda cukup mengetik rinciannya tanpa perlu menekan Enter.</p>
                         </div>
                     </div>
 
@@ -188,12 +188,11 @@
                         <div class="step-card-content">
                             <h3>Laporan & Monitoring</h3>
                             <ul class="feature-list">
-                                <li><i class="fas fa-history"></i> <strong>Riwayat Permintaan</strong> - Rekap seluruh permintaan ATK dengan status dan filter tanggal</li>
                                 <li><i class="fas fa-exchange-alt"></i> <strong>Pergerakan Stok</strong> - Histori Masuk/Keluar stok per item</li>
-                                <li><i class="fas fa-shield-alt"></i> <strong>Jejak Audit</strong> - Log lengkap aktivitas perubahan stok</li>
-                                <li><i class="fas fa-chart-bar"></i> <strong>Level Stok</strong> - Monitoring posisi stok saat ini per kategori</li>
+                                <li><i class="fas fa-file-pdf"></i> <strong>Cetak Laporan PDF</strong> - Mencetak Buku Bantu, Keadaan Barang, RKBP, dan Laporan Biaya ke format PDF resmi bertanda tangan.</li>
+                                <li><i class="fas fa-shield-alt"></i> <strong>Jejak Audit</strong> - Log lengkap seluruh rekaman aplikasi tanpa pandang tahun.</li>
                             </ul>
-                            <p class="tip"><i class="fas fa-file-excel"></i> Semua laporan di atas dapat diekspor ke Excel.</p>
+                            <p class="tip"><i class="fas fa-user-edit"></i> Jangan lupa atur nama Pejabat (PPK, Bendahara, dll) di menu <strong>Master Penandatangan</strong> sebelum mencetak PDF.</p>
                         </div>
                     </div>
 

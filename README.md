@@ -4,6 +4,11 @@ SIAT (Sistem Inventori ATK Terpadu) adalah sistem informasi berbasis web untuk m
 
 Aplikasi ini dirancang khusus untuk memenuhi standar administrasi dengan fitur cetak laporan PDF beserta tanda tangan pejabat terkait.
 
+## Fitur Unggulan Baru
+- **Global Year Filter**: Seluruh data transaksi otomatis menyesuaikan dengan tahun yang dipilih saat login.
+- **Tutup Periode & Tarik Sisa Stok**: Mengunci perubahan data akhir tahun dan memindahkan otomatis sisa stok ke tahun berikutnya.
+- **Pencarian Real-Time**: Kolom pencarian data bereaksi instan tanpa perlu menekan tombol Enter (menggunakan algoritma *debouncing* anti-*lag*).
+
 ## Peran Pengguna (Roles)
 Sistem ini menggunakan dua level pengguna utama:
 1. **Admin (Level 1)**: Administrator yang mengelola master data barang, stok, kategori, pengguna, master penandatangan laporan, serta memberikan persetujuan (approve/deliver/reject) atas permintaan ATK dari pegawai.
@@ -19,13 +24,13 @@ Sistem ini menggunakan dua level pengguna utama:
 
 ### 2. Inventori
 - **Kelola Stok**
-  Menu untuk melihat, menambah, mengubah, dan menghapus data barang ATK. Lengkap dengan informasi stok tersedia, stok direservasi (ditahan sementara menunggu persetujuan), batas stok minimum, dan fungsi penyesuaian (adjustment) stok.
+  Menu untuk melihat, menambah, mengubah, dan menghapus data barang ATK. Lengkap dengan informasi stok tersedia, stok direservasi (ditahan sementara menunggu persetujuan), batas stok minimum, fungsi penyesuaian (adjustment) stok, dan tombol **Tutup Periode** untuk mengunci tahun aktif.
 
 - **Kelola Kategori**
   Menu untuk mengelompokkan barang-barang ATK berdasarkan jenisnya (contoh: Kertas, Alat Tulis, Tinta, dll).
 
 - **Import Stok**
-  Fungsi manajemen stok massal. Memungkinkan Admin mengunduh template Excel, mengisi data awal atau data restock barang, mencatat **Tanggal Pembelian**, lalu mengunggah (.xls/.xlsx) dan memprosesnya sekaligus.
+  Fungsi manajemen stok massal. Memungkinkan Admin mengunduh template Excel, mengisi data awal atau data restock barang, mencatat **Tanggal Pembelian**, lalu mengunggah (.xls/.xlsx) dan memprosesnya sekaligus. Jika ada pergantian tahun, di sinilah admin akan menekan tombol raksasa **Tarik Data Stok Sisa Tahun Sebelumnya**.
 
 - **Kelola Pengguna**
   Menu manajemen akun. Mengatur status aktif/non-aktif akun, reset password, hapus, dan pendaftaran pengguna baru. Data pegawai mencakup Nama, NIP, dan **Jabatan**.
