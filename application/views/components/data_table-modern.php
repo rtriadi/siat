@@ -126,10 +126,12 @@ function buildPaginationUrl(page) {
     return url.toString();
 }
 
-document.getElementById('searchInput').addEventListener('keyup', function(e) {
-    if (e.key === 'Enter') {
+let searchTimeout;
+document.getElementById('searchInput').addEventListener('input', function(e) {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
         performSearch(this.value);
-    }
+    }, 500);
 });
 
 function performSearch(value) {

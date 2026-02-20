@@ -263,17 +263,28 @@ class Stock_model extends CI_Model
 
     public function get_all($filters = [])
     {
+        $year = $this->session->userdata('login_year') ?? date('Y');
+
         $this->db
-            ->select('stock_item.*, stock_category.category_name')
+            ->select("
+                stock_item.id_item, 
+                stock_item.item_code, 
+                stock_item.category_id, 
+                stock_item.item_name, 
+                stock_item.low_stock_threshold, 
+                stock_category.category_name,
+                COALESCE(SUM(CASE 
+                    WHEN sm.movement_type IN ('in', 'adjust', 'cancel') THEN sm.qty_delta
+                    WHEN sm.movement_type = 'reserve' THEN -sm.qty_delta
+                    ELSE 0
+                END), 0) as available_qty
+            ", false)
             ->from('stock_item')
-            ->join('stock_category', 'stock_category.id_category = stock_item.category_id', 'left');
+            ->join('stock_category', 'stock_category.id_category = stock_item.category_id', 'left')
+            ->join('stock_movement sm', "sm.item_id = stock_item.id_item AND YEAR(sm.created_at) = '$year'", 'left');
 
         if (isset($filters['category_id'])) {
             $this->db->where('stock_item.category_id', $filters['category_id']);
-        }
-
-        if (isset($filters['low_stock_only']) && $filters['low_stock_only']) {
-            $this->db->where('stock_item.available_qty <= stock_item.low_stock_threshold');
         }
 
         if (!empty($filters['search'])) {
@@ -282,6 +293,12 @@ class Stock_model extends CI_Model
             $this->db->like('stock_item.item_name', $search);
             $this->db->or_like('stock_category.category_name', $search);
             $this->db->group_end();
+        }
+
+        $this->db->group_by('stock_item.id_item, stock_item.item_code, stock_item.category_id, stock_item.item_name, stock_item.low_stock_threshold, stock_category.category_name');
+
+        if (isset($filters['low_stock_only']) && $filters['low_stock_only']) {
+            $this->db->having('available_qty <= stock_item.low_stock_threshold');
         }
 
         if (!empty($filters['order_by'])) {
@@ -296,17 +313,28 @@ class Stock_model extends CI_Model
 
     public function get_all_paginated($filters = [], $per_page = 10, $offset = 0)
     {
+        $year = $this->session->userdata('login_year') ?? date('Y');
+
         $this->db
-            ->select('stock_item.*, stock_category.category_name')
+            ->select("
+                stock_item.id_item, 
+                stock_item.item_code, 
+                stock_item.category_id, 
+                stock_item.item_name, 
+                stock_item.low_stock_threshold, 
+                stock_category.category_name,
+                COALESCE(SUM(CASE 
+                    WHEN sm.movement_type IN ('in', 'adjust', 'cancel') THEN sm.qty_delta
+                    WHEN sm.movement_type = 'reserve' THEN -sm.qty_delta
+                    ELSE 0
+                END), 0) as available_qty
+            ", false)
             ->from('stock_item')
-            ->join('stock_category', 'stock_category.id_category = stock_item.category_id', 'left');
+            ->join('stock_category', 'stock_category.id_category = stock_item.category_id', 'left')
+            ->join('stock_movement sm', "sm.item_id = stock_item.id_item AND YEAR(sm.created_at) = '$year'", 'left');
 
         if (isset($filters['category_id'])) {
             $this->db->where('stock_item.category_id', $filters['category_id']);
-        }
-
-        if (isset($filters['low_stock_only']) && $filters['low_stock_only']) {
-            $this->db->where('stock_item.available_qty <= stock_item.low_stock_threshold');
         }
 
         if (!empty($filters['search'])) {
@@ -317,10 +345,18 @@ class Stock_model extends CI_Model
             $this->db->group_end();
         }
 
+        $this->db->group_by('stock_item.id_item, stock_item.item_code, stock_item.category_id, stock_item.item_name, stock_item.low_stock_threshold, stock_category.category_name');
+
+        if (isset($filters['low_stock_only']) && $filters['low_stock_only']) {
+            $this->db->having('available_qty <= stock_item.low_stock_threshold');
+        }
+
+        // To get total rows accurately with GROUP BY and HAVING
+        $count_query = clone $this->db;
+        $total = $count_query->get()->num_rows();
+
         $this->db->order_by('stock_category.category_name', 'ASC');
         $this->db->order_by('stock_item.item_name', 'ASC');
-        
-        $total = $this->db->count_all_results('', false);
         
         $result = $this->db->limit($per_page, $offset)->get()->result_array();
         
