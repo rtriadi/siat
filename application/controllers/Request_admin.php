@@ -47,19 +47,36 @@ class Request_admin extends CI_Controller
             }
         }
 
+        $this->load->model('Stock_model');
         $data = [
             'page' => 'Request Management',
             'requests' => $requests,
             'user_map' => $user_map,
             'selected_status' => $status ?: 'all',
-            'search' => $search ?? ''
+            'search' => $search ?? '',
+            'is_closed' => $this->Stock_model->check_period_closed($this->session->userdata('login_year') ?? date('Y'))
         ];
 
         $this->template->loadmodern('request_admin/index-modern', $data);
     }
 
+    /**
+     * Helper to verify if the period is closed
+     */
+    private function check_period_closed()
+    {
+        $this->load->model('Stock_model');
+        $year = $this->session->userdata('login_year') ?? date('Y');
+        if ($this->Stock_model->check_period_closed($year)) {
+            $this->session->set_flashdata('error', 'Akses ditolak. Periode tahun ' . $year . ' sudah ditutup, tidak dapat membuat permintaan baru.');
+            redirect('request_admin');
+            exit;
+        }
+    }
+
     public function create()
     {
+        $this->check_period_closed();
         $this->load->model('Stock_model');
         
         $employees = $this->db
@@ -90,6 +107,7 @@ class Request_admin extends CI_Controller
 
     public function store()
     {
+        $this->check_period_closed();
         $this->load->model('Stock_model');
         
         $user_id = (int) $this->input->post('user_id');

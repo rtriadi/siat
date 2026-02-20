@@ -7,15 +7,28 @@
             <p class="page-subtitle">Kelola semua permintaan ATK</p>
         </div>
         <div class="header-actions">
+            <?php if (!isset($is_closed) || !$is_closed): ?>
             <a href="<?= site_url('request_admin/create') ?>" class="btn btn-primary">
                 <i class="fas fa-plus"></i>
                 Buat Permintaan
             </a>
+            <?php else: ?>
+            <button class="btn btn-secondary" disabled title="Periode sudah ditutup" style="opacity: 0.6; cursor: not-allowed;">
+                <i class="fas fa-lock"></i>
+                Buat Permintaan
+            </button>
+            <?php endif; ?>
         </div>
     </div>
 </div>
 
 <div class="content">
+    <?php if (isset($is_closed) && $is_closed): ?>
+    <div class="alert alert-warning" style="background-color: #fffbeb; border: 1px solid #fde68a; color: #92400e;">
+        <i class="fas fa-lock"></i>
+        <span><strong>Periode Ditutup:</strong> Tahun ini telah ditutup. Anda tidak dapat membuat permintaan ATK baru untuk periode berjalan.</span>
+    </div>
+    <?php endif; ?>
     
     
 
