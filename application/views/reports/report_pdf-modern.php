@@ -66,6 +66,21 @@
                         <label class="form-label">Sampai Tanggal</label>
                         <input type="date" name="date_end" class="form-control" value="<?= $date_end ?>">
                     </div>
+
+                    <!-- Print Date -->
+                    <div class="form-group">
+                        <label class="form-label">Tanggal Cetak / TTD</label>
+                        <input type="date" name="print_date" class="form-control" value="<?= $print_date ?? date('Y-m-d') ?>" required>
+                    </div>
+
+                    <!-- Paper Size -->
+                    <div class="form-group">
+                        <label class="form-label">Ukuran Kertas</label>
+                        <select name="paper_size" class="form-control" required>
+                            <option value="A4" <?= ($paper_size ?? 'A4') == 'A4' ? 'selected' : '' ?>>A4</option>
+                            <option value="F4" <?= ($paper_size ?? 'A4') == 'F4' ? 'selected' : '' ?>>F4 / Folio</option>
+                        </select>
+                    </div>
                 </div>
 
                 <div class="form-actions" style="margin-top: 16px;">

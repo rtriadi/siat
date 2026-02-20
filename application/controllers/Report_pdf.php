@@ -27,6 +27,8 @@ class Report_pdf extends CI_Controller
         $date_end = $this->input->get('date_end');
         $month = $this->input->get('month');
         $year = $this->input->get('year');
+        $print_date = $this->input->get('print_date');
+        $paper_size = $this->input->get('paper_size');
 
         $data['report_type'] = $report_type;
         $data['period_type'] = $period_type ?: 'monthly';
@@ -34,6 +36,9 @@ class Report_pdf extends CI_Controller
         $data['date_end'] = $date_end;
         $data['month'] = $month ?: date('m');
         $data['year'] = $year ?: date('Y');
+        $data['print_date'] = $print_date ?: date('Y-m-d');
+        $data['paper_size'] = $paper_size ?: 'A4';
+        $data['is_print'] = false; // Flag for preview mode
 
         $data['preview_data'] = null;
         $data['signatories'] = $this->Signatory_model->get_all_roles();
@@ -88,6 +93,11 @@ class Report_pdf extends CI_Controller
         $data['date_end'] = $this->input->get('date_end');
         $data['month'] = $this->input->get('month') ?: date('m');
         $data['year'] = $this->input->get('year') ?: date('Y');
+        $print_date = $this->input->get('print_date');
+        $data['print_date'] = $print_date ?: date('Y-m-d');
+        $data['paper_size'] = $this->input->get('paper_size') ?: 'A4';
+        $data['is_print'] = true; // Flag for print mode
+        
         $data['signatories'] = $this->Signatory_model->get_all_roles();
 
         $filters = $this->build_filters($data);

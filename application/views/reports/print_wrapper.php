@@ -13,6 +13,21 @@
             background: #f0f0f0;
         }
 
+        <?php
+        $p_width = '210mm';
+        $p_height = '297mm';
+        $print_size_css = 'A4';
+
+        if (isset($paper_size) && $paper_size === 'F4') {
+            $p_width = '215.9mm';
+            $p_height = '330.2mm';
+            $print_size_css = '215.9mm 330.2mm';
+        }
+
+        $page_width = isset($print_orientation) && $print_orientation === 'landscape' ? $p_height : $p_width;
+        $page_height = isset($print_orientation) && $print_orientation === 'landscape' ? $p_width : $p_height;
+        ?>
+
         .print-toolbar {
             position: fixed;
             top: 0;
@@ -75,8 +90,8 @@
         .report-page {
             background: white;
             box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-            width: <?= isset($print_orientation) && $print_orientation === 'landscape' ? '297mm' : '210mm' ?>;
-            min-height: <?= isset($print_orientation) && $print_orientation === 'landscape' ? '210mm' : '297mm' ?>;
+            width: <?= $page_width ?>;
+            min-height: <?= $page_height ?>;
             padding: 15mm 15mm;
             box-sizing: border-box;
         }
@@ -84,7 +99,7 @@
         /* Print styles */
         @media print {
             @page {
-                size: A4 <?= isset($print_orientation) ? $print_orientation : 'portrait' ?>;
+                size: <?= $print_size_css ?> <?= isset($print_orientation) ? $print_orientation : 'portrait' ?>;
                 margin: 10mm 15mm;
             }
 
