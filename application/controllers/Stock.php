@@ -44,6 +44,8 @@ class Stock extends CI_Controller
             $grouped[$category_name][] = $item;
         }
         
+        $year = $this->session->userdata('login_year') ?? date('Y');
+        
         $data = [
             'page' => 'Stock Management',
             'items' => $items,
@@ -54,10 +56,24 @@ class Stock extends CI_Controller
             'total_pages' => $total_pages,
             'total_rows' => $total_rows,
             'start_row' => $offset + 1,
-            'end_row' => min($offset + $per_page, $total_rows)
+            'end_row' => min($offset + $per_page, $total_rows),
+            'is_closed' => $this->stock_model->check_period_closed($year)
         ];
         
         $this->template->loadmodern('stock/index-modern', $data);
+    }
+
+    /**
+     * Helper to verify if the period is closed
+     */
+    private function check_period_closed()
+    {
+        $year = $this->session->userdata('login_year') ?? date('Y');
+        if ($this->stock_model->check_period_closed($year)) {
+            $this->session->set_flashdata('error', 'Akses ditolak. Periode tahun ' . $year . ' sudah ditutup.');
+            redirect('stock');
+            exit;
+        }
     }
 
     /**
@@ -65,6 +81,7 @@ class Stock extends CI_Controller
      */
     public function create()
     {
+        $this->check_period_closed();
         $data = [
             'page' => 'Tambah Item',
             'categories' => $this->category_model->get_all()
@@ -78,6 +95,7 @@ class Stock extends CI_Controller
      */
     public function store()
     {
+        $this->check_period_closed();
         $this->form_validation->set_rules('category_id', 'Kategori', 'required|trim');
         $this->form_validation->set_rules('item_name', 'Nama Item', 'required|trim|max_length[255]');
         $this->form_validation->set_rules('unit', 'Satuan', 'required|trim|max_length[50]');
@@ -113,6 +131,7 @@ class Stock extends CI_Controller
      */
     public function edit($id_item)
     {
+        $this->check_period_closed();
         $item = $this->stock_model->get_by_id($id_item);
         
         if (!$item) {
@@ -134,6 +153,7 @@ class Stock extends CI_Controller
      */
     public function update($id_item)
     {
+        $this->check_period_closed();
         $this->form_validation->set_rules('category_id', 'Kategori', 'required|trim');
         $this->form_validation->set_rules('item_name', 'Nama Item', 'required|trim|max_length[255]');
         $this->form_validation->set_rules('unit', 'Satuan', 'required|trim|max_length[50]');
@@ -181,6 +201,26 @@ class Stock extends CI_Controller
         }
 
         $this->session->set_flashdata('success', 'Item berhasil diubah.');
+        redirect('stock');
+    }
+
+    /**
+     * Menutup periode berjalan secara permanen untuk tarik data ke tahun berikutnya
+     */
+    public function close_period()
+    {
+        // Must be admin, checked in constructor
+        $year = $this->session->userdata('login_year') ?? date('Y');
+        $admin_id = $this->session->userdata('id_user');
+
+        $result = $this->stock_model->close_period($year, $admin_id);
+
+        if ($result['success']) {
+            $this->session->set_flashdata('success', $result['message']);
+        } else {
+            $this->session->set_flashdata('error', $result['message']);
+        }
+
         redirect('stock');
     }
 }

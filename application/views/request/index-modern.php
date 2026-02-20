@@ -6,14 +6,27 @@
             <h1 class="page-title">Permintaan ATK</h1>
             <p class="page-subtitle">Kelola dan lacak permintaan ATK Anda</p>
         </div>
+        <?php if (!isset($is_closed) || !$is_closed): ?>
         <a href="<?= site_url('request/create') ?>" class="btn btn-primary">
             <i class="fas fa-plus"></i>
             Buat Permintaan
         </a>
+        <?php else: ?>
+        <button class="btn btn-secondary" disabled title="Periode sudah ditutup" style="opacity: 0.6; cursor: not-allowed;">
+            <i class="fas fa-lock"></i>
+            Buat Permintaan
+        </button>
+        <?php endif; ?>
     </div>
 </div>
 
 <div class="content">
+    <?php if (isset($is_closed) && $is_closed): ?>
+    <div class="alert alert-warning" style="background-color: #fffbeb; border: 1px solid #fde68a; color: #92400e;">
+        <i class="fas fa-lock"></i>
+        <span><strong>Periode Ditutup:</strong> Tahun ini telah ditutup. Anda tidak dapat membuat permintaan ATK baru untuk periode berjalan.</span>
+    </div>
+    <?php endif; ?>
     
     
 
@@ -25,10 +38,12 @@
             </div>
             <h3>Belum ada permintaan</h3>
             <p>Buat permintaan ATK pertama Anda</p>
+            <?php if (!isset($is_closed) || !$is_closed): ?>
             <a href="<?= site_url('request/create') ?>" class="btn btn-primary">
                 <i class="fas fa-plus"></i>
                 Buat Permintaan
             </a>
+            <?php endif; ?>
         </div>
     </div>
     <?php else: ?>

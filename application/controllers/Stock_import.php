@@ -39,6 +39,7 @@ class Stock_import extends CI_Controller
         $data['categories'] = $this->category_model->get_all();
         $data['needs_rollover'] = $needs_rollover;
         $data['is_first_year'] = $is_first_year;
+        $data['is_closed'] = $this->stock_model->check_period_closed($year);
         $data['login_year'] = $year;
         
         $this->template->loadmodern('stock/import_form-modern', $data);
@@ -63,6 +64,11 @@ class Stock_import extends CI_Controller
     public function import_preview()
     {
         $year = $this->session->userdata('login_year') ?? date('Y');
+        
+        if ($this->stock_model->check_period_closed($year)) {
+            $this->session->set_flashdata('error', 'Akses ditolak. Periode tahun ' . $year . ' sudah ditutup, tidak dapat melakukan import stok.');
+            redirect('stock_import/import');
+        }
         $is_first_year = !$this->stock_model->needs_rollover($year);
 
         if (!$this->stock_model->check_rollover_status($year)) {
@@ -228,6 +234,12 @@ class Stock_import extends CI_Controller
 
     public function import_commit()
     {
+        $year = $this->session->userdata('login_year') ?? date('Y');
+        if ($this->stock_model->check_period_closed($year)) {
+            $this->session->set_flashdata('error', 'Akses ditolak. Periode tahun ' . $year . ' sudah ditutup.');
+            redirect('stock_import/import');
+        }
+
         $rows = $this->session->userdata(self::IMPORT_SESSION_KEY);
         $purchase_date = $this->session->userdata('import_purchase_date');
 

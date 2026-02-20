@@ -147,6 +147,46 @@ class Stock_model extends CI_Model
     }
 
     /**
+     * Cek apakah periode/tahun tertentu sudah ditutup (is_closed = 1)
+     */
+    public function check_period_closed($year)
+    {
+        $status = $this->db->get_where('yearly_rollover', ['year' => $year])->row_array();
+        return ($status && isset($status['is_closed']) && $status['is_closed'] == 1);
+    }
+
+    /**
+     * Tutup periode untuk tahun berjalan agar bisa ditarik ke tahun berikutnya
+     */
+    public function close_period($year, $admin_id)
+    {
+        if ($this->check_period_closed($year)) {
+            return ['success' => false, 'message' => 'Periode tahun ' . $year . ' sudah ditutup sebelumnya.'];
+        }
+
+        // We check if the row exists
+        $status = $this->db->get_where('yearly_rollover', ['year' => $year])->row_array();
+
+        if ($status) {
+            $this->db->where('year', $year)->update('yearly_rollover', [
+                'is_closed' => 1,
+                'closed_at' => date('Y-m-d H:i:s'),
+                'closed_by' => $admin_id
+            ]);
+        } else {
+            $this->db->insert('yearly_rollover', [
+                'year' => $year,
+                'status' => 'pending', // Pending because it hasn't pulled forward anything itself yet (if applicable)
+                'is_closed' => 1,
+                'closed_at' => date('Y-m-d H:i:s'),
+                'closed_by' => $admin_id
+            ]);
+        }
+
+        return ['success' => true, 'message' => 'Periode tahun ' . $year . ' berhasil ditutup. Data sisa siap ditarik ke tahun berikutnya.'];
+    }
+
+    /**
      * Eksekusi penarikan saldo sisa dari akhir tahun sebelumnya (dec 31)
      */
     public function process_yearly_rollover($year, $admin_id)
@@ -157,6 +197,11 @@ class Stock_model extends CI_Model
 
         $prev_year = $year - 1;
         
+        // Pengecekan krusial: Pastikan tahun sebelumnya sudah ditutup (Tutup Periode)
+        if (!$this->check_period_closed($prev_year)) {
+            return ['success' => false, 'message' => 'Gagal menarik data. Anda harus melakukan "Tutup Periode" untuk tahun ' . $prev_year . ' terlebih dahulu.'];
+        }
+
         // Use keadaan_barang logic to get exact ending stock of previous year
         $filters = [
             'year' => $prev_year

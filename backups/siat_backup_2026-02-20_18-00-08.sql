@@ -20,7 +20,12 @@ CREATE TABLE `notification` (
   KEY `idx_notification_created` (`created_at`),
   KEY `idx_notification_type` (`type`),
   CONSTRAINT `notification_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id_user`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `notification` (`id_notification`, `user_id`, `title`, `message`, `type`, `source_id`, `is_read`, `created_at`, `read_at`) VALUES (1, 1, 'Stok menipis', 'Stok Kertas F4 tersisa 0 (minimum 1).', 'stock', 2, 0, '2026-02-20 17:59:39', NULL);
+INSERT INTO `notification` (`id_notification`, `user_id`, `title`, `message`, `type`, `source_id`, `is_read`, `created_at`, `read_at`) VALUES (2, 1, 'Stok menipis', 'Stok Isi Hekter No. 3 tersisa 1 (minimum 1).', 'stock', 7, 0, '2026-02-20 17:59:39', NULL);
+INSERT INTO `notification` (`id_notification`, `user_id`, `title`, `message`, `type`, `source_id`, `is_read`, `created_at`, `read_at`) VALUES (3, 1, 'Stok menipis', 'Stok Warna tersisa 1 (minimum 1).', 'stock', 9, 0, '2026-02-20 17:59:39', NULL);
+
 
 #
 # TABLE STRUCTURE FOR: request_header
@@ -160,7 +165,18 @@ CREATE TABLE `stock_item` (
   CONSTRAINT `CONSTRAINT_1` CHECK (`available_qty` >= 0),
   CONSTRAINT `CONSTRAINT_2` CHECK (`reserved_qty` >= 0),
   CONSTRAINT `CONSTRAINT_3` CHECK (`used_qty` >= 0)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `stock_item` (`id_item`, `item_code`, `category_id`, `item_name`, `unit`, `available_qty`, `reserved_qty`, `used_qty`, `low_stock_threshold`, `created_at`, `updated_at`) VALUES (1, 'BRG-0001', 1, 'Kertas A4', 'Pcs', 13, 0, 0, 1, '2026-02-20 17:59:39', '2026-02-20 17:59:39');
+INSERT INTO `stock_item` (`id_item`, `item_code`, `category_id`, `item_name`, `unit`, `available_qty`, `reserved_qty`, `used_qty`, `low_stock_threshold`, `created_at`, `updated_at`) VALUES (2, 'BRG-0002', 1, 'Kertas F4', 'Pcs', 0, 0, 0, 1, '2026-02-20 17:59:39', '2026-02-20 17:59:39');
+INSERT INTO `stock_item` (`id_item`, `item_code`, `category_id`, `item_name`, `unit`, `available_qty`, `reserved_qty`, `used_qty`, `low_stock_threshold`, `created_at`, `updated_at`) VALUES (3, 'BRG-0003', 3, 'Canon Hitam 790', 'Pcs', 3, 0, 0, 1, '2026-02-20 17:59:39', '2026-02-20 17:59:39');
+INSERT INTO `stock_item` (`id_item`, `item_code`, `category_id`, `item_name`, `unit`, `available_qty`, `reserved_qty`, `used_qty`, `low_stock_threshold`, `created_at`, `updated_at`) VALUES (4, 'BRG-0004', 3, 'Warna 790', 'Pcs', 2, 0, 0, 1, '2026-02-20 17:59:39', '2026-02-20 17:59:39');
+INSERT INTO `stock_item` (`id_item`, `item_code`, `category_id`, `item_name`, `unit`, `available_qty`, `reserved_qty`, `used_qty`, `low_stock_threshold`, `created_at`, `updated_at`) VALUES (5, 'BRG-0005', 3, 'Data Warna', 'Pcs', 12, 0, 0, 1, '2026-02-20 17:59:39', '2026-02-20 17:59:39');
+INSERT INTO `stock_item` (`id_item`, `item_code`, `category_id`, `item_name`, `unit`, `available_qty`, `reserved_qty`, `used_qty`, `low_stock_threshold`, `created_at`, `updated_at`) VALUES (6, 'BRG-0006', 4, 'Isi Hekter No. 23', 'Pcs', 16, 0, 0, 1, '2026-02-20 17:59:39', '2026-02-20 17:59:39');
+INSERT INTO `stock_item` (`id_item`, `item_code`, `category_id`, `item_name`, `unit`, `available_qty`, `reserved_qty`, `used_qty`, `low_stock_threshold`, `created_at`, `updated_at`) VALUES (7, 'BRG-0007', 4, 'Isi Hekter No. 3', 'Pcs', 1, 0, 0, 1, '2026-02-20 17:59:39', '2026-02-20 17:59:39');
+INSERT INTO `stock_item` (`id_item`, `item_code`, `category_id`, `item_name`, `unit`, `available_qty`, `reserved_qty`, `used_qty`, `low_stock_threshold`, `created_at`, `updated_at`) VALUES (8, 'BRG-0008', 2, 'Hitam', 'Pcs', 3, 0, 0, 1, '2026-02-20 17:59:39', '2026-02-20 17:59:39');
+INSERT INTO `stock_item` (`id_item`, `item_code`, `category_id`, `item_name`, `unit`, `available_qty`, `reserved_qty`, `used_qty`, `low_stock_threshold`, `created_at`, `updated_at`) VALUES (9, 'BRG-0009', 2, 'Warna', 'Pcs', 1, 0, 0, 1, '2026-02-20 17:59:39', '2026-02-20 17:59:39');
+
 
 #
 # TABLE STRUCTURE FOR: stock_movement
@@ -184,7 +200,18 @@ CREATE TABLE `stock_movement` (
   KEY `idx_type` (`movement_type`),
   CONSTRAINT `stock_movement_ibfk_1` FOREIGN KEY (`item_id`) REFERENCES `stock_item` (`id_item`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `stock_movement_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `user` (`id_user`) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `stock_movement` (`id_movement`, `item_id`, `movement_type`, `qty_delta`, `reason`, `purchase_date`, `user_id`, `created_at`) VALUES (1, 1, 'in', 13, 'Import stok awal', '2025-01-01', 1, '2026-02-20 17:59:39');
+INSERT INTO `stock_movement` (`id_movement`, `item_id`, `movement_type`, `qty_delta`, `reason`, `purchase_date`, `user_id`, `created_at`) VALUES (2, 2, 'in', 0, 'Import stok awal', '2025-01-01', 1, '2026-02-20 17:59:39');
+INSERT INTO `stock_movement` (`id_movement`, `item_id`, `movement_type`, `qty_delta`, `reason`, `purchase_date`, `user_id`, `created_at`) VALUES (3, 3, 'in', 3, 'Import stok awal', '2025-01-01', 1, '2026-02-20 17:59:39');
+INSERT INTO `stock_movement` (`id_movement`, `item_id`, `movement_type`, `qty_delta`, `reason`, `purchase_date`, `user_id`, `created_at`) VALUES (4, 4, 'in', 2, 'Import stok awal', '2025-01-01', 1, '2026-02-20 17:59:39');
+INSERT INTO `stock_movement` (`id_movement`, `item_id`, `movement_type`, `qty_delta`, `reason`, `purchase_date`, `user_id`, `created_at`) VALUES (5, 5, 'in', 12, 'Import stok awal', '2025-01-01', 1, '2026-02-20 17:59:39');
+INSERT INTO `stock_movement` (`id_movement`, `item_id`, `movement_type`, `qty_delta`, `reason`, `purchase_date`, `user_id`, `created_at`) VALUES (6, 6, 'in', 16, 'Import stok awal', '2025-01-01', 1, '2026-02-20 17:59:39');
+INSERT INTO `stock_movement` (`id_movement`, `item_id`, `movement_type`, `qty_delta`, `reason`, `purchase_date`, `user_id`, `created_at`) VALUES (7, 7, 'in', 1, 'Import stok awal', '2025-01-01', 1, '2026-02-20 17:59:39');
+INSERT INTO `stock_movement` (`id_movement`, `item_id`, `movement_type`, `qty_delta`, `reason`, `purchase_date`, `user_id`, `created_at`) VALUES (8, 8, 'in', 3, 'Import stok awal', '2025-01-01', 1, '2026-02-20 17:59:39');
+INSERT INTO `stock_movement` (`id_movement`, `item_id`, `movement_type`, `qty_delta`, `reason`, `purchase_date`, `user_id`, `created_at`) VALUES (9, 9, 'in', 1, 'Import stok awal', '2025-01-01', 1, '2026-02-20 17:59:39');
+
 
 #
 # TABLE STRUCTURE FOR: user
@@ -214,7 +241,7 @@ CREATE TABLE `user` (
   CONSTRAINT `user_ibfk_1` FOREIGN KEY (`level`) REFERENCES `user_role` (`id_role`) ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=46 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-INSERT INTO `user` (`id_user`, `username`, `password`, `nama`, `nip`, `level`, `is_active`, `created_at`, `updated_at`, `last_login`, `jabatan`, `must_change_password`) VALUES (1, 'admin', '$2y$10$/AIatMdVBwD1MOCaPUiAI.Wl46FZ1QgZvQ0hKoTJrfoY5riVLZIH2', 'Administrator', '000000', 1, 1, '2026-02-10 14:05:15', '2026-02-20 17:40:59', '2026-02-20 17:40:59', NULL, 0);
+INSERT INTO `user` (`id_user`, `username`, `password`, `nama`, `nip`, `level`, `is_active`, `created_at`, `updated_at`, `last_login`, `jabatan`, `must_change_password`) VALUES (1, 'admin', '$2y$10$/AIatMdVBwD1MOCaPUiAI.Wl46FZ1QgZvQ0hKoTJrfoY5riVLZIH2', 'Administrator', '000000', 1, 1, '2026-02-10 14:05:15', '2026-02-20 17:48:26', '2026-02-20 17:48:26', NULL, 0);
 INSERT INTO `user` (`id_user`, `username`, `password`, `nama`, `nip`, `level`, `is_active`, `created_at`, `updated_at`, `last_login`, `jabatan`, `must_change_password`) VALUES (4, 'rtriadi', '$2y$10$KyC2joc.N.MZ.DdwRZW8DuKSES8CC9i4dt3H.HH.gcNiROgGl0Bp2', 'Rahmat Triadi, S.Kom.', '199510212020121004', 2, 1, '2026-02-13 14:04:15', '2026-02-20 15:54:31', '2026-02-20 15:54:31', 'Pranata Komputer Ahli Pertama', 1);
 INSERT INTO `user` (`id_user`, `username`, `password`, `nama`, `nip`, `level`, `is_active`, `created_at`, `updated_at`, `last_login`, `jabatan`, `must_change_password`) VALUES (5, '196610121992032002', '$2y$10$ooj5JmYg4ZncqaYjFF3g4OUPSA6GHrFBO86ydgNbIQmopfvXC7pRu', 'Dra. Mukasipa, M.H.', '196610121992032002', 2, 1, '2026-02-20 10:39:28', '2026-02-20 10:39:28', NULL, 'Hakim Tingkat Pertama', 1);
 INSERT INTO `user` (`id_user`, `username`, `password`, `nama`, `nip`, `level`, `is_active`, `created_at`, `updated_at`, `last_login`, `jabatan`, `must_change_password`) VALUES (6, '196601011993031011', '$2y$10$LaJ.pK56.EVuv3LLT4x5.eWtgCmnZMi0CxfmeVgzncxqQe04NyzES', 'Drs. Satrio Am. Karim,', '196601011993031011', 2, 1, '2026-02-20 10:39:28', '2026-02-20 10:39:28', NULL, 'Hakim Tingkat Pertama', 1);
@@ -289,6 +316,9 @@ CREATE TABLE `yearly_rollover` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `year` int(4) NOT NULL,
   `status` enum('pending','completed') NOT NULL DEFAULT 'completed',
+  `is_closed` tinyint(1) NOT NULL DEFAULT 0,
+  `closed_at` datetime DEFAULT NULL,
+  `closed_by` int(11) DEFAULT NULL,
   `processed_at` datetime DEFAULT NULL,
   `processed_by` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),

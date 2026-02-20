@@ -19,14 +19,29 @@ class Request extends CI_Controller
         $user_id = $this->session->userdata('id_user');
         $data = [
             'page' => 'Permintaan ATK',
-            'requests' => $this->Request_model->get_by_user($user_id)
+            'requests' => $this->Request_model->get_by_user($user_id),
+            'is_closed' => $this->Stock_model->check_period_closed($this->session->userdata('login_year') ?? date('Y'))
         ];
 
         $this->template->loadmodern('request/index-modern', $data);
     }
 
+    /**
+     * Helper to verify if the period is closed
+     */
+    private function check_period_closed()
+    {
+        $year = $this->session->userdata('login_year') ?? date('Y');
+        if ($this->Stock_model->check_period_closed($year)) {
+            $this->session->set_flashdata('error', 'Akses ditolak. Periode tahun ' . $year . ' sudah ditutup, tidak dapat membuat permintaan baru.');
+            redirect('request');
+            exit;
+        }
+    }
+
     public function create()
     {
+        $this->check_period_closed();
         $items = $this->Stock_model->get_all();
         $available_items = [];
         foreach ($items as $item) {
@@ -47,6 +62,7 @@ class Request extends CI_Controller
 
     public function store()
     {
+        $this->check_period_closed();
         $qtys = $this->input->post('qty_requested');
         if (!is_array($qtys)) {
             $qtys = [];

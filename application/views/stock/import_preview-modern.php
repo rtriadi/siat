@@ -60,7 +60,7 @@
                                 <td><?= htmlspecialchars($row['category_name'], ENT_QUOTES, 'UTF-8') ?></td>
                                 <td><?= htmlspecialchars($row['item_name'], ENT_QUOTES, 'UTF-8') ?></td>
                                 <td><?= (int) $row['qty'] ?></td>
-                                <td><?= htmlspecialchars($row['unit'], ENT_QUOTES, 'UTF-8') ?></td>
+                                <td><?= htmlspecialchars($row['satuan'], ENT_QUOTES, 'UTF-8') ?></td>
                                 <td><?= (int) $row['min_stock'] ?></td>
                                 <td>
                                     <?php if ($row['action'] === 'create'): ?>

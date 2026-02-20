@@ -6,14 +6,33 @@
             <h1 class="page-title">Kelola Stok</h1>
             <p class="page-subtitle">Kelola inventori ATK tersedia</p>
         </div>
-        <a href="<?= site_url('stock/create') ?>" class="btn btn-primary">
-            <i class="fas fa-plus"></i>
-            <span>Tambah Item</span>
-        </a>
+        <div style="display: flex; gap: 10px;">
+            <?php if (isset($is_closed) && $is_closed): ?>
+                <button class="btn btn-secondary" disabled title="Periode sudah ditutup" style="opacity: 0.6; cursor: not-allowed;">
+                    <i class="fas fa-lock"></i>
+                    <span>Tutup Periode</span>
+                </button>
+            <?php else: ?>
+                <a href="<?= site_url('stock/close_period') ?>" class="btn btn-warning" onclick="return confirm('Apakah Anda yakin ingin MENUTUP PERIODE ini? Setelah ditutup, transaksi di tahun ini TIDAK DAPAT diubah dan Saldo Sisa akan siap ditarik ke tahun berikutnya.');" style="background-color: #f59e0b; color: white; border: none;">
+                    <i class="fas fa-lock"></i>
+                    <span>Tutup Periode</span>
+                </a>
+                <a href="<?= site_url('stock/create') ?>" class="btn btn-primary">
+                    <i class="fas fa-plus"></i>
+                    <span>Tambah Item</span>
+                </a>
+            <?php endif; ?>
+        </div>
     </div>
 </div>
 
 <div class="content">
+    <?php if (isset($is_closed) && $is_closed): ?>
+    <div class="alert alert-warning" style="background-color: #fffbeb; border: 1px solid #fde68a; color: #92400e;">
+        <i class="fas fa-lock"></i>
+        <span><strong>Periode Ditutup:</strong> Transaksi untuk tahun berjalan telah ditutup secara permanen. Anda tidak dapat menambah atau mengubah stok. Saldo tahun ini siap ditarik ke tahun berikutnya.</span>
+    </div>
+    <?php endif; ?>
     
     
     
@@ -30,7 +49,9 @@
                         <th style="width: 120px;">Tersedia</th>
                         <th style="width: 120px;">Threshold</th>
                         <th style="width: 100px;">Status</th>
+                        <?php if (!isset($is_closed) || !$is_closed): ?>
                         <th style="width: 120px;">Aksi</th>
+                        <?php endif; ?>
                     </tr>
                 </thead>
                 <tbody>
@@ -97,7 +118,9 @@
                             <th style="width: 120px;">Tersedia</th>
                             <th style="width: 120px;">Threshold</th>
                             <th style="width: 100px;">Status</th>
+                            <?php if (!isset($is_closed) || !$is_closed): ?>
                             <th style="width: 120px;">Aksi</th>
+                            <?php endif; ?>
                         </tr>
                     </thead>
                     <tbody>
@@ -130,6 +153,7 @@
                                 <span class="status-badge success">Tersedia</span>
                                 <?php endif; ?>
                             </td>
+                            <?php if (!isset($is_closed) || !$is_closed): ?>
                             <td>
                                 <div class="action-buttons">
                                     <a href="<?= site_url('stock/edit/' . $item['id_item']) ?>" class="btn btn-sm btn-outline" title="Edit">
@@ -137,6 +161,7 @@
                                     </a>
                                 </div>
                             </td>
+                            <?php endif; ?>
                         </tr>
                         <?php endforeach; ?>
                     </tbody>
